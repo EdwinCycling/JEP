@@ -347,6 +347,9 @@ export interface JEPModel {
     entities?: {
       entity?: JEPEntity[];
     };
+    workflowdefinitions?: {
+      workflowdefinition?: JEPWorkflowDefinition[];
+    };
     megamenuextensions?: {
       megamenuextension?: JEPMegaMenuExtension[];
     };
@@ -362,4 +365,80 @@ export interface JEPModel {
     };
     [key: string]: any;
   };
+}
+
+export interface JEPWorkflowDefinition {
+  "@_name": string;
+  "@_description"?: string;
+  "@_descriptionplural"?: string;
+  "@_translationid"?: string;
+  "@_translationpluralid"?: string;
+  customentity?: JEPEntity;
+  stages?: {
+    stage?: JEPWorkflowStage[];
+  };
+}
+
+export interface JEPWorkflowStage {
+  "@_name": string;
+  "@_caption": string;
+  "@_translationid"?: string;
+  "@_defaultaction"?: string;
+  "@_stagetype"?: 'New' | 'Restarted' | 'Canceled' | 'Final';
+  propertysettings?: {
+    propertysetting?: JEPWorkflowPropertySetting[];
+  };
+  actions?: {
+    action?: JEPWorkflowAction[];
+  };
+  editpermissions?: JEPWorkflowPermissions;
+  deletepermissions?: JEPWorkflowPermissions;
+}
+
+export interface JEPWorkflowPropertySetting {
+  "@_property": string;
+  "@_mandatory"?: string;
+  "@_visible"?: string;
+  "@_enabled"?: string;
+}
+
+export interface JEPWorkflowAction {
+  "@_name": string;
+  "@_caption": string;
+  "@_translationid"?: string;
+  "@_tostage": string;
+  permissions?: JEPWorkflowPermissions;
+  skip?: {
+    "@_tostage": string;
+    condition: string;
+  };
+  automations?: {
+    automation?: JEPWorkflowAutomation[];
+  };
+}
+
+export interface JEPWorkflowPermissions {
+  user?: JEPWorkflowUserPermission | JEPWorkflowUserPermission[];
+  team?: JEPWorkflowTeamPermission | JEPWorkflowTeamPermission[];
+  actor?: JEPWorkflowActorPermission | JEPWorkflowActorPermission[];
+}
+
+export interface JEPWorkflowUserPermission {
+  "@_involvementtype": 'Creator' | 'AccountManager' | 'ProjectManager' | 'Employee' | 'EmployeeManager' | 'User' | 'UserManager';
+  "@_property"?: string;
+  "@_customentityproperty"?: string;
+}
+
+export interface JEPWorkflowTeamPermission {
+  "@_code": string;
+}
+
+export interface JEPWorkflowActorPermission {
+  "@_involvementtype": 'User';
+  "@_action": string;
+}
+
+export interface JEPWorkflowAutomation {
+  "@_action": string;
+  "@_description"?: string;
 }

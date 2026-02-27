@@ -36,7 +36,9 @@ export const useJEPStore = create<JEPState>((set) => ({
       const orderedKeys = [
         "customentities",
         "entities",
+        "workflowdefinitions",
         "megamenuextensions",
+        "quickmenuextensions",
         "roles",
         "applicationextensions",
         "translationextensions"
@@ -71,7 +73,9 @@ export const useJEPStore = create<JEPState>((set) => ({
         const orderedKeys = [
           "customentities",
           "entities",
+          "workflowdefinitions",
           "megamenuextensions",
+          "quickmenuextensions",
           "roles",
           "applicationextensions",
           "translationextensions"

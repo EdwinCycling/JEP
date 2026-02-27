@@ -34,8 +34,9 @@ import XmlEditorScreen from "./editor/XmlEditorScreen";
 import CustomEntityModal from "./CustomEntityModal";
 import ConnectionsModal from "./ConnectionsModal";
 import PageCanvas from "./PageCanvas";
+import WorkflowDesigner from "./WorkflowDesigner";
 
-type MainTab = 'tables' | 'menus' | 'pages' | 'features';
+type MainTab = 'tables' | 'menus' | 'pages' | 'workflows' | 'features';
 
 const getTypeIcon = (type: string) => {
   switch (type?.toLowerCase()) {
@@ -266,6 +267,15 @@ export default function Dashboard() {
                 </div>
               </button>
               <button 
+                onClick={() => setMainTab('workflows')}
+                className={`pb-4 text-sm font-medium font-sans border-b-2 transition-colors ${mainTab === 'workflows' ? 'border-exact-red text-exact-red' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              >
+                <div className="flex items-center">
+                  <History className="w-4 h-4 mr-2" />
+                  Bedrijfsprocessen
+                </div>
+              </button>
+              <button 
                 onClick={() => setMainTab('features')}
                 className={`pb-4 text-sm font-medium font-sans border-b-2 transition-colors ${mainTab === 'features' ? 'border-exact-red text-exact-red' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               >
@@ -455,6 +465,12 @@ export default function Dashboard() {
           {mainTab === 'pages' && (
             <div className="flex-1 overflow-y-auto bg-white">
               <PageCanvas />
+            </div>
+          )}
+
+          {mainTab === 'workflows' && (
+            <div className="flex-1 overflow-y-auto bg-white">
+              <WorkflowDesigner />
             </div>
           )}
 
