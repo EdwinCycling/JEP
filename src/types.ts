@@ -47,6 +47,10 @@ export interface JEPField {
   "@_controltype"?: string;
   "@_referstocustomentity"?: string;
   "@_featurecheck"?: 'All' | 'Any' | 'None';
+<<<<<<< HEAD
+=======
+  mandatorylegislation?: string;
+>>>>>>> b53ebf4d42539e8569fdcbc2a493a5323f35b67e
   mandatoryfeaturesets?: JEPFeaturesets;
   forbiddenfeaturesets?: JEPFeaturesets;
   visibleexpression?: string;
