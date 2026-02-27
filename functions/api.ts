@@ -1,13 +1,11 @@
 import serverless from "serverless-http";
-import express from "express";
 import { createApiApp } from "../src/api-server";
 
-const apiApp = createApiApp();
-const app = express();
+const app = createApiApp();
 
-// Handle both paths just in case to avoid 404s in Netlify environment
-app.use("/.netlify/functions/api", apiApp);
-app.use("/api", apiApp);
-app.use("/", apiApp);
-
-export const handler = serverless(app);
+// serverless-http handles the mapping of the Netlify event to Express
+// We don't need to wrap it in another express app here if createApiApp already returns one.
+export const handler = serverless(app, {
+  // This helps when the function is called via a redirect
+  basePath: "/api"
+});
