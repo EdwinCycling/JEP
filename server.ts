@@ -3,7 +3,11 @@ import { createServer as createViteServer } from "vite";
 import { createApiApp } from "./src/api-server";
 
 export async function createApp() {
-  const app = createApiApp();
+  const app = express();
+  const apiApp = createApiApp();
+
+  // Mount API app
+  app.use("/api", apiApp);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
@@ -16,7 +20,7 @@ export async function createApp() {
     app.use(express.static("dist"));
   }
 
-  // API 404 handler for any non-handled API routes
+  // API 404 handler for any non-handled API routes (now using the mounted path)
   app.use("/api/*", (req, res) => {
     res.status(404).json({ error: `API route niet gevonden: ${req.method} ${req.originalUrl}` });
   });

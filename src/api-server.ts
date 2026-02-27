@@ -24,12 +24,12 @@ export function createApiApp() {
     next();
   });
 
-  // API Routes
-  app.get("/api/health", (req, res) => {
+  // API Routes (Prefix /api is handled by mounting)
+  app.get("/health", (req, res) => {
     res.json({ status: "ok", env: process.env.NODE_ENV });
   });
 
-  app.get("/api/xsd", (req, res) => {
+  app.get("/xsd", (req, res) => {
     try {
       const xsdPath = path.resolve(process.cwd(), "Extensions.xsd");
       if (fs.existsSync(xsdPath)) {
@@ -44,7 +44,7 @@ export function createApiApp() {
     }
   });
 
-  app.post("/api/xsd", upload.single("xsdFile"), (req, res) => {
+  app.post("/xsd", upload.single("xsdFile"), (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "Geen bestand geüpload." });
@@ -61,7 +61,7 @@ export function createApiApp() {
     }
   });
 
-  app.post("/api/parse-xml", upload.single("xmlFile"), async (req, res) => {
+  app.post("/parse-xml", upload.single("xmlFile"), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "Geen bestand geüpload." });
@@ -120,7 +120,7 @@ export function createApiApp() {
     }
   });
 
-  app.post("/api/build-xml", (req, res) => {
+  app.post("/build-xml", (req, res) => {
     try {
       const { jsonObj } = req.body;
       if (!jsonObj) return res.json({ xml: "" });
@@ -158,7 +158,7 @@ export function createApiApp() {
     }
   });
 
-  app.post("/api/validate-xml", async (req, res) => {
+  app.post("/validate-xml", async (req, res) => {
     try {
       const { xml } = req.body;
       const xsdPath = path.resolve(process.cwd(), "Extensions.xsd");
@@ -181,7 +181,7 @@ export function createApiApp() {
     }
   });
 
-  app.post("/api/explain-extension", (req, res) => {
+  app.post("/explain-extension", (req, res) => {
     try {
       const { jsonObj } = req.body;
       const extensionCode = jsonObj?.extension?.["@_code"] || "Onbekend";
@@ -191,7 +191,7 @@ export function createApiApp() {
     }
   });
 
-  app.post("/api/generate-changelog", (req, res) => {
+  app.post("/generate-changelog", (req, res) => {
     try {
       const { changes } = req.body;
       res.json({ changelog: (changes || []).join("\n") || "Geen wijzigingen." });
