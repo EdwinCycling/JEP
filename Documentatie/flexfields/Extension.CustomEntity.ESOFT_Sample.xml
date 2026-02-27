@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension code="ESOFT_CarPark" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Extensions.xsd">
+	<customentities>
+		<!--
+		In the customentities section you can create your own entities.
+		In the customentity definition you define:
+		- name: name of your custom entity which would also be the business component name
+		- table: table name to store custom entity data
+		- description and descriptionplural: to display text for custom entity (similar to caption)
+		-->
+		<customentity name="ESOFT_CarPark_Car" table="ESOFT_CarPark_Cars" description="Car" descriptionplural="Cars"  translationid="ESOFT_CarTranslated" translationpluralid="ESOFT_CarsTranslated">
+			<!--
+			In the property definition you define:
+			- name: name of the property in the custom business component. This will also be the column in the table of your custom entity
+			- type: datatype of the property. We support the following datatypes: boolean, string, double, int, date, enum, guid
+			- allowempty: whether the property must be mandatory
+			- unique: whether the property should be unique
+			- iscode: whether property value should be used to display the code part of a browser control while referencing another entity
+			- isdescription: whether property value should be used to display the description part of a browser control while referencing another entity
+			- refersto: name of the referencing EOL entity (limited number (7) of existing EOL entities)
+			- referstocustomentity: name of the referencing custom entity that is defined in the current Extension file
+			- autoincrement: whether a unique value is to be generated automatically for the property value when a new record is created
+			- startvalue: the start value of the property when the autoincrement is set to true
+			-->
+			<!-- string -->
+			<property name="License" type="string" length="20" caption="License" allowempty="false" unique="true" iscode="true"/>
+			<property name="Description" type="string" length="120" caption="Description" isdescription="true"/>
+			<!-- guid: custom entity to EOL entity -->
+			<property name="Account" caption="Owner" type="guid" refersto="Account"/>
+			<!-- date -->
+			<property name="PurchaseDate" type="date" caption="Purchase date" allowempty="true"/>
+			<!-- guid: custom entity to custom entity -->
+			<property name="Model" caption="Model" type="guid" referstocustomentity="ESOFT_CarPark_Model" allowempty="false" />
+			<!-- boolean -->
+			<property name="SecondHand" caption="Second hand" type="boolean"/>
+			<!-- guid: custom entity to custom entity -->
+			<property name="Showroom" caption="Showroom" type="guid" referstocustomentity="ESOFT_CarPark_Showroom" />
+			<!-- guid: custom entity to custom entity -->
+			<property name="PreviousCar" caption="Previous car" type="guid" referstocustomentity="ESOFT_CarPark_Car" />
+			<!-- picture -->
+			<property name="Picture" caption="Picture" type="picture" />
+			<property name="Remarks" caption="Remarks" type="string" length="300" />
+		</customentity>
+		<customentity name="ESOFT_CarPark_Model" table="ESOFT_CarPark_Models" description="Car model" descriptionplural="Car models" translationid="ESOFT_CarModelTranslated" translationpluralid="ESOFT_CarModelsTranslated">
+			<!-- string -->
+			<property name="Code" type="string" length="30" caption="Code" allowempty="false" unique="true" iscode="true"/>
+			<property name="Name" type="string" length="60" caption="Name" allowempty="false" isdescription="true"/>
+			<property name="Description" type="string" length="120" caption="Description"/>
+			<!-- Enum -->
+			<property name="CarBrand" type="integer" caption="Brand" allowempty="false">
+				<listitems allowempty="true" listdefinitionid="BrandList">
+					<listitem value="1" caption="Audi"/>
+					<listitem value="2" caption="Skoda"/>
+					<listitem value="3" caption="Tesla"/>
+					<listitem value="4" caption="Volvo"/>
+				</listitems>
+			</property>
+			<property name="Power" type="integer" caption="Power" allowempty="true">
+				<listitems allowempty="true" listdefinitionid="PowerList">
+					<listitem value="1" caption="Biodiesel"/>
+					<listitem value="2" caption="Diesel"/>
+					<listitem value="3" caption="Electric"/>
+					<listitem value="4" caption="Gasoline"/>
+					<listitem value="5" caption="Hybrid"/>
+					<listitem value="6" caption="Hydrogen"/>
+				</listitems>
+			</property>
+			<property name="TyreTypes" type="integer" caption="Tyre types" allowempty="true">
+				<listitems allowempty="true" listdefinitionid="TyreTypesList">
+					<listitem value="1" caption="All season"/>
+					<listitem value="2" caption="All terrain"/>
+					<listitem value="3" caption="Performance"/>
+					<listitem value="4" caption="Summer"/>
+					<listitem value="5" caption="Winter"/>
+				</listitems>
+			</property>
+			<property name="CarColor" type="string" caption="Color" allowempty="false" length="60">
+				<listitems allowempty="true" listdefinitionid="BrandList">
+					<listitem value="Blue" />
+					<listitem value="Red" />
+					<listitem value="Green" />
+					<listitem value="Black" />
+				</listitems>
+			</property>
+		</customentity>
+		<customentity name="ESOFT_CarPark_Showroom" table="ESOFT_CarPark_Showrooms" description="Showroom" descriptionplural="Showrooms" translationid="ESOFT_ShowroomTranslated" translationpluralid="ESOFT_ShowroomsTranslated">
+			<!-- string -->
+			<property name="Name" type="string" length="60" caption="Name" allowempty="false" iscode="true" unique="true"/>
+			<property name="City" type="string" length="60" caption="City" allowempty="false" isdescription="true"/>
+			<property name="Postcode" type="string" length="60" caption="Postcode" allowempty="false"/>
+			<property name="AddressLine" type="string" length="120" caption="Address Line" allowempty="false"/>
+		</customentity>
+		<customentity name="ESOFT_CarPark_SoftwareUpdate" table="ESOFT_CarPark_SoftwareUpdates" description="Software update" descriptionplural="Software updates">
+			<!-- integer -->
+			<property name="UpdateCode" type="integer" caption="Code" allowempty="false" unique="true" iscode="true" autoincrement="true" startvalue="10"/>
+			<property name="Version" type="string" length="60" caption="Version" allowempty="false"/>
+			<property name="Model" caption="Car model" type="guid" referstocustomentity="ESOFT_CarPark_Model" allowempty="false"/>
+			<property name="UpdateURL" type="string" length="500" caption="Update URL" allowempty="false"/>
+		</customentity>
+	</customentities>
+	<roles>
+	<!--If you combine extensionrole and existingrole, then extensionrole must go first -->	
+	<!--For the CarPark Extension, we define Extension roles: one to manage carparks, and one to view carparks-->
+	<extensionrole name="ESOFT_CarPark_CarParkManager" caption="Carpark manager" translationid="ESOFT_CarPark_ManagerRole">
+		<!--and link them directly to custom entities with permissions    As part of runtimeextension we create a functionpoint with the name of the custom entity (ESOFT_CarPark_Car / ESOFT_Carpark_CarModel)     -->
+		<customentity name="ESOFT_CarPark_Car" permission="View Create Update Delete" />
+		<customentity name="ESOFT_CarPark_Model" permission="View Create Update Delete" />
+		<customentity name="ESOFT_CarPark_Showroom" permission="View Create Update Delete" />
+		<customentity name="ESOFT_CarPark_SoftwareUpdate" permission="View Create Update Delete" />
+	</extensionrole>
+	<extensionrole name="ESOFT_CarPark_CarParkViewer" caption="Carpark viewer">
+		<customentity name="ESOFT_CarPark_Car" permission="View" />
+		<customentity name="ESOFT_CarPark_Model" permission="View" />
+		<customentity name="ESOFT_CarPark_Showroom" permission="View" />
+		<customentity name="ESOFT_CarPark_SoftwareUpdate" permission="View" />
+	</extensionrole>
+	<extensionrole name="ESOFT_CarPark_ShowroomManager" caption="Carpark showroom manager">
+		<customentity name="ESOFT_CarPark_Showroom" permission="View Create Update Delete" />
+		<customentity name="ESOFT_CarPark_Model" permission="View Create Update Delete" />
+	</extensionrole>
+	<!--If you would also like to include existingrole permissions, you can specify them below the extensionroles.
+		In this case, we give users with roles View accounts, Validate accounts or Manage accounts specific permissions.
+		The View accounts will only receive the Vier permission, while Validate and Manage accounts get all premissions.
+		If you want to give all users permissions, then you can use role id="100" (All users).
+	-->
+	<existingrole id="110" caption="View accounts">
+		<customentity name="ESOFT_CarPark_Showroom" permission="View" />
+		<customentity name="ESOFT_CarPark_SoftwareUpdate" permission="View" />
+		<customentity name="ESOFT_CarPark_Model" permission="View" />
+		<customentity name="ESOFT_CarPark_Car" permission="View" />		
+	</existingrole>
+	<existingrole id="111" caption="Validate accounts">
+		<customentity name="ESOFT_CarPark_Showroom" permission="Full" />
+		<customentity name="ESOFT_CarPark_SoftwareUpdate" permission="Full" />
+		<customentity name="ESOFT_CarPark_Model" permission="Full" />
+		<customentity name="ESOFT_CarPark_Car" permission="Full" />
+	</existingrole>
+	<existingrole id="112" caption="Manage accounts">
+		<customentity name="ESOFT_CarPark_Showroom" permission="Full" />
+		<customentity name="ESOFT_CarPark_SoftwareUpdate" permission="Full" />
+		<customentity name="ESOFT_CarPark_Model" permission="Full" />
+		<customentity name="ESOFT_CarPark_Car" permission="Full" />
+	</existingrole>
+	</roles>	
+	<entities>
+		<entity name="Account" table="Accounts" extensiontable="ESOFT_CarPark_Accounts" businesscomponent="Account">
+			<!-- EOL entity Extension properties can refer to custom entities using referstocustomentity attribute. -->
+			<!-- guid: EOL entity to custom entity -->
+			<property name="ESOFT_CarPark_CarShowroom" columnname="CarShowroom" referstocustomentity="ESOFT_CarPark_Showroom" type="guid" caption="Preferred car showroom" />
+		</entity>
+	</entities>
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<tab id="tCarPark" existing="false" caption="Car park">
+				<section id="sCars" existing="false" caption="Cars">
+					<subsection id="ssCars" existing="false" caption="Cars">
+						<!-- Custom entity pages can be accessed by defining 
+						the href attribute of UI elements like - link(megamenu), button or monitoritem. 
+						-->
+						<!-- Custom entity Overview page: ExtCustomEntities.aspx?Entity= -->
+						<link id="lListCars" caption="Overview: Cars" href="ExtCustomEntities.aspx?Entity=ESOFT_CarPark_Car" existing="false" />
+						<!-- Custom entity Maintenance page: ExtCustomEntity.aspx?BCAction=0&amp;Entity= -->
+						<link id="lNewCar" caption="New car" href="ExtCustomEntity.aspx?Entity=ESOFT_CarPark_Car&amp;BCAction=0" existing="false" />
+					</subsection>
+				</section>
+				<section id="sModels" existing="false" caption="Car models">
+					<subsection id="ssModels" existing="false" caption="Car models">
+						<!-- Custom entity pages can be accessed by defining 
+						the href attribute of UI elements like - link(megamenu), button or monitoritem. 
+						-->
+						<!-- Custom entity Overview page: ExtCustomEntities.aspx?Entity= -->
+						<link id="lListModels" caption="Overview: Models"  existing="false" showinnewtab="false" href="ExtCustomEntities.aspx?Entity=ESOFT_CarPark_Model" />
+						<!-- Custom entity Maintenance page: ExtCustomEntity.aspx?BCAction=0&amp;Entity= -->
+						<link id="lNewModel" caption="New model"  existing="false" showinnewtab="false" href="ExtCustomEntity.aspx?Entity=ESOFT_CarPark_Model&amp;BCAction=0" />
+					</subsection>
+				</section>
+				<section id="sShowrooms" existing="false" caption="Showrooms">
+					<subsection id="ssShowrooms" existing="false" caption="Showrooms">
+						<!-- Custom entity pages can be accessed by defining 
+						the href attribute of UI elements like - link(megamenu), button or monitoritem. 
+						-->
+						<!-- Custom entity Overview page: ExtCustomEntities.aspx?Entity= -->
+						<link id="lListShowrooms" caption="Overview: Showrooms"  existing="false" showinnewtab="false" href="ExtCustomEntities.aspx?Entity=ESOFT_CarPark_Showroom" />
+						<!-- Custom entity Maintenance page: ExtCustomEntity.aspx?BCAction=0&amp;Entity= -->
+						<link id="lNewShowroom" caption="New showroom"  existing="false" showinnewtab="false" href="ExtCustomEntity.aspx?Entity=ESOFT_CarPark_Showroom&amp;BCAction=0" />
+					</subsection>
+				</section>
+				<section id="sCarSoftwareUpdates" existing="false" caption="Car software updates">
+					<subsection id="ssSoftwareUpdates" existing="false" caption="Software updates">
+						<link id="lListSoftwareUpdates" caption="Overview: Software updates"  existing="false" showinnewtab="false" href="ExtCustomEntities.aspx?Entity=ESOFT_CarPark_SoftwareUpdate"/>
+						<link id="lNewSoftwareUpdate" caption="New software update"  existing="false" showinnewtab="false" href="ExtCustomEntity.aspx?Entity=ESOFT_CarPark_SoftwareUpdate&amp;BCAction=0"/>
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+	<applicationextensions>
+		<applicationextension application="CRMAccounts.aspx">
+			<filterblock>
+				<!-- guid: new filter referring to custom entity -->
+				<filter id="fCarShowroom" />
+			</filterblock>
+			<columngroup id="cgGeneral" existing="true">
+				<join extensiontable="ESOFT_CarPark_Accounts" />
+				<!-- guid: new column referring to custom entity -->
+				<column field="CarShowroom" filterid="fCarShowroom" />
+			</columngroup>
+		</applicationextension>
+		<applicationextension application="CRMAccountCard.aspx">
+			<monitor id="QuickActionsMonitor" existing="true">
+				<!-- Custom entity pages can be accessed by defining 
+					the href attribute of UI elements like - link(megamenu), button or monitoritem. 
+				-->
+				<monitoritem id="CarEntityMonitor" caption="Car entity link"  href="ExtCustomEntities.aspx?Entity=ESOFT_CarPark_Car&amp;ESOFT_CarPark_Account={ID}" image="icon-customer-30.png" existing="false" />
+			</monitor>
+			<contentsectionrow id="AccountSectionRow" existing="true">
+				<!-- guid: new field referring to custom entity -->
+				<field datafield="ESOFT_CarPark_CarShowroom" />
+			</contentsectionrow>
+		</applicationextension>
+		<applicationextension application="CRMAccount.aspx">
+			<cardsection id="csCustomEntitySection" caption="Car Showroom" positionbefore="csContact1" existing="false">
+				<!-- guid: new field referring to custom entity -->
+				<field  datafield="ESOFT_CarPark_CarShowroom" referstocustomentity="ESOFT_CarPark_Showroom" />
+			</cardsection>
+		</applicationextension>
+		<!-- Custom entity pages can be extended by defining attributes:
+			- entity: name of the custom entity
+			- pagetype: page type (Maintenance, List)
+		-->
+		<applicationextension entity="ESOFT_CarPark_Car" pagetype="Maintenance">
+			<button id="btnCarNews" caption="Car and driver news" href="https://www.caranddriver.com/" existing="false" showinnewtab="true"/>
+
+			<!--You can define your own sections, and add fields to these sections instead of the default csGeneral section.
+				Fields are added to the default csGeneral section if they are not defined in any section of the applicationextension
+				Here a section is added to upload Pictures -->
+			<cardsection id="csPicture" existing="false" caption="Picture">
+				<field datafield="Picture"  />
+			</cardsection>
+			<!--And here a seperate section for Remarks -->
+			<cardsection id="csRemarks" existing="false" caption="Remarks">
+				<field  datafield="Remarks"  />
+			</cardsection>
+		</applicationextension>
+
+		<applicationextension entity="ESOFT_CarPark_Model" pagetype="Maintenance">
+			<!--You can position sections with the positionbefore attribute. If ommitted, sections are positioned at the end-->
+			<cardsection id="csProperties" existing="false" caption="Properties" positionbefore="csMonitor">
+				<field datafield="Power" controltype="radiobuttonlist" />
+				<!--If controltype attribute is not provided, the field of type=list gets rendered as Dropdown -->
+				<field datafield="TyreTypes"/>
+				<field datafield="CarColor"/>
+			</cardsection>
+		</applicationextension>
+	</applicationextensions>
+
+	<translationextensions>
+		<translation id="ESOFT_CarTranslated">
+			<language code="en">Car</language>
+			<language code="nl">Auto</language>
+		</translation>
+		<translation id="ESOFT_CarsTranslated">
+			<language code="en">Cars</language>
+			<language code="nl">Autos</language>
+		</translation>
+		<translation id="ESOFT_CarModelTranslated">
+			<language code="en">Car model</language>
+			<language code="nl">Auto model</language>
+		</translation>
+		<translation id="ESOFT_CarModelsTranslated">
+			<language code="en">Car models</language>
+			<language code="nl">Automodellen</language>
+		</translation>
+		<translation id="ESOFT_ShowroomTranslated">
+			<language code="en">Showroom</language>
+			<language code="nl">Showroom</language>
+		</translation>
+		<translation id="ESOFT_ShowroomsTranslated">
+			<language code="en">Showrooms</language>
+			<language code="nl">Showrooms</language>
+		</translation>
+		<translation id="ESOFT_CarPark_ManagerRole">
+			<language code="en">Carpark manager</language>
+			<language code="nl">Autopark manager</language>
+		</translation>
+	</translationextensions>
+</extension>

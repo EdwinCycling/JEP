@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" code="ESOFT_EMP" version="1.0.0" xsi:noNamespaceSchemaLocation="Extensions.xsd">
+	<!--
+		This Applicant Onboarding extension contains 3 Workflows, and shows how we can chain multiple Workflows with automations.
+	-->
+	<workflowdefinitions>
+		<!--The first Workflow is the Applicant Onboarding Workflow, which is the main Workflow for onboarding applicants.-->
+		<workflowdefinition name="ESOFT_EMP_Applicant" description="Applicant" descriptionplural="Applicants" translationid="ESOFT_EMP_ApplicantOnboarding">
+			<customentity>
+				<property caption="First name" name="FirstName" type="string" length="60" allowempty="false" />
+				<property caption="Birth name" name="BirthName" type="string" length="60" allowempty="false" isdescription="true" />
+				<property caption="Address" name="AddressLine1" type="string" length="60" allowempty="true" />
+				<property caption="Postcode" name="Postcode" type="string" length="60" allowempty="true" />
+				<property caption="City" name="City" type="string" length="60" allowempty="true" />
+				<property caption="Start date" name="StartDate" type="date" length="0" allowempty="true" />
+				<property caption="Hiring manager" name="HiringManager" type="guid" refersto="Employee" allowempty="true" />
+				<property caption="Needs laptop" name="NeedsLaptop" type="boolean" />
+				<property caption="Contractor" name="IsContractor" type="boolean" />
+				<property caption="Workflow remarks" name="WorkflowRemarks" type="string" length="1000" allowempty="true" />
+				<property caption="Picture" name="ApplicantPicture" type="picture" />
+				<property caption="Attachment" name="WorkflowAttachment" type="attachment" />
+			</customentity>
+			<stages>
+				<stage name="Created" caption="Created" captionid="2468">
+					<actions>
+						<action name="CreateProposal" tostage="ProposalCreated" caption="Create proposal" translationid="ESOFT_EMP_CreateProposalActionTranslation">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="CreatedReject" tostage="Rejected" caption="Reject" captionid="360">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+				<stage name="ProposalCreated" caption="Proposal created" translationid="ESOFT_EMP_ProposalCreatedStageTranslation">
+					<propertysettings>
+						<propertysetting property="FirstName" enabled="false" />
+						<propertysetting property="BirthName" enabled="false" />
+						<propertysetting property="AddressLine1" enabled="false" />
+						<propertysetting property="Postcode" enabled="false" />
+						<propertysetting property="City" enabled="false" />
+					</propertysettings>
+					<actions>
+						<action name="AcceptProposal" tostage="ProposalAccepted" caption="Accept proposal">
+							<permissions>
+								<user involvementtype="Creator" />
+								<!--Users with a general right or a division-specific right to this extension role can perform this action-->
+								<!--The extension role's name attribute must match an extension role's name defined for this Premium extension-->
+								<extensionrole name="ESOFT_EMP_Applicant"/>
+							</permissions>
+						</action>
+						<action name="ProposalCreatedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="ProposalCreatedCancel" tostage="Canceled" caption="Cancel">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+						<!--Users with a general right or a division-specific right to this extension role can edit the Workflow instance at this stage-->
+						<extensionrole name="ESOFT_EMP_Applicant"/>
+					</editpermissions>
+				</stage>
+				<stage name="ProposalAccepted" caption="Proposal accepted">
+					<propertysettings>
+						<propertysetting property="FirstName" enabled="false" />
+						<propertysetting property="BirthName" enabled="false" />
+						<propertysetting property="AddressLine1" enabled="false" />
+						<propertysetting property="Postcode" enabled="false" />
+						<propertysetting property="City" enabled="false" />
+					</propertysettings>
+					<actions>
+						<action name="IDcheck" tostage="IDCheckDone" caption="ID check">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="ProposalAcceptedCancel" tostage="Canceled" caption="Cancel">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="IDCheckDone" caption="ID check done">
+					<propertysettings>
+						<propertysetting property="FirstName" enabled="false" />
+						<propertysetting property="BirthName" enabled="false" />
+						<propertysetting property="AddressLine1" enabled="false" />
+						<propertysetting property="Postcode" enabled="false" />
+						<propertysetting property="City" enabled="false" />
+					</propertysettings>
+					<actions>
+						<action name="SecurityCheck" tostage="SecurityCheckDone" caption="Security check">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="IDCheckReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+				</stage>
+				<stage name="SecurityCheckDone" caption="Security check done">
+					<propertysettings>
+						<propertysetting property="FirstName" enabled="false" />
+						<propertysetting property="BirthName" enabled="false" />
+						<propertysetting property="AddressLine1" enabled="false" />
+						<propertysetting property="Postcode" enabled="false" />
+						<propertysetting property="City" enabled="false" />
+					</propertysettings>
+					<actions>
+						<action name="CreateContract" tostage="ContractCreated" caption="Create contract">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="SecurityCheckDoneCancel" tostage="Canceled" caption="Cancel">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+				</stage>
+				<stage name="ContractCreated" caption="Contract created">
+					<propertysettings>
+						<propertysetting property="FirstName" enabled="false" />
+						<propertysetting property="BirthName" enabled="false" />
+						<propertysetting property="AddressLine1" enabled="false" />
+						<propertysetting property="Postcode" enabled="false" />
+						<propertysetting property="City" enabled="false" />
+						<propertysetting property="StartDate" mandatory="true" />
+					</propertysettings>
+					<actions>
+						<action name="SignContract" tostage="ContractSigned" caption="Sign contract">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="ContractCreatedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="ContractSigned" caption="Contract signed">
+					<propertysettings>
+						<propertysetting property="FirstName" enabled="false" />
+						<propertysetting property="BirthName" enabled="false" />
+						<propertysetting property="AddressLine1" enabled="false" />
+						<propertysetting property="Postcode" enabled="false" />
+						<propertysetting property="City" enabled="false" />
+					</propertysettings>
+					<actions>
+						<action name="CreateEmployee" tostage="EmployeeCreated" caption="Create employee" triggerdescription="When an employee is created from an applicant">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+
+							<!--In the last action, we define 3 automations: 
+								1. to create the Employee from the Applicant,
+								2. to create a follow-up Workflow for an entrance pass request, and
+								3. to create a follow-up Workflow for a laptop request.
+							-->
+							<automations>
+								<automation description="Employee onboarding">
+
+									<automationaction type="Create" businesscomponent="Employee" description="Create Employee">
+										<properties>
+											<property name="FirstName" valueexpression="FirstName" />
+											<property name="BirthName" valueexpression="BirthName" />
+											<property name="City" valueexpression="City" />
+											<property name="Postcode" valueexpression="Postcode" />
+											<property name="AddressStreet" valueexpression="AddressLine1" />
+											<property name="StartDate" valueexpression="StartDate" />
+											<property name="Picture" valueexpression="ApplicantPicture" />
+										</properties>
+									</automationaction>
+
+									<automationaction type="Create" businesscomponent="ESOFT_EMP_EntrancePassRequest" description="Create ESOFT_EMP_EntrancePassRequest">
+										<properties>
+											<!--You can use return values from previous actions in a valueexpression.
+												Here we use the return value from the previous action to set the Employee property of the new EntrancePassRequest.
+											-->
+											<property name="Employee" valueexpression="Result_EMP_Create_Employee" />
+
+											<!--This is an example of how to use an expression to format a text-->											
+											<property name="Description" valueexpression="Concat('Entrance pass for ', FirstName)" />
+
+											<property name="StartDate" valueexpression="StartDate" />
+										</properties>
+									</automationaction>
+
+									<automationaction type="Create" businesscomponent="ESOFT_EMP_LaptopRequest" description="Create ESOFT_EMP_LaptopRequest">
+										<!--You can use the enabledexpression to conditionally execute the automation.
+											In this case, we only want to create a LaptopRequest if the NeedsLaptop property is set to true.
+										-->
+										<enabledexpression>NeedsLaptop</enabledexpression>
+										<properties>
+											<property name="Employee" valueexpression="Result_EMP_Create_Employee" />
+											<property name="Description" valueexpression="Concat('Laptop for ', FirstName)" />
+											<property name="StartDate" valueexpression="StartDate" />
+										</properties>
+									</automationaction>
+								</automation>
+							</automations>
+						</action>
+						<action name="ContractSignedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions denyall="true" />
+					<deletepermissions denyall="true" />
+				</stage>
+				<stage name="EmployeeCreated" caption="Employee created" />
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action name="Resubmit" tostage="Created" caption="Resubmit">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+				<stage name="Canceled" caption="Canceled" stagetype="Canceled">
+					<editpermissions denyall="true" />
+					<deletepermissions>
+						<user involvementtype="Creator" />
+						<!--Users with a general right or a division-specific right to this extension role can delete the Workflow instance at this stage-->
+						<extensionrole name="ESOFT_EMP_Applicant"/>
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+
+		<!--The second Workflow is the RequestEntrancePass Workflow, which is a follow-up Workflow for the Applicant Onboarding Workflow.-->
+		<workflowdefinition name="ESOFT_EMP_EntrancePassRequest" description="Entrance pass request"  descriptionplural="Entrance pass requests">
+			<customentity>
+				<property name="Description" type="string" length="60" caption="Description" allowempty="false" isdescription="true" />
+				<property name="Employee" type="guid" refersto="Employee" caption="Employee" allowempty="false" />
+				<property name="StartDate" type="date" caption="Start date" allowempty="false" />
+			</customentity>
+			<stages>
+				<stage name="Requested" caption="Requested">
+					<actions>
+						<action name="Approve" tostage="Approved" caption="Approve">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="RequestedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="RequestedCancel" tostage="Canceled" caption="Cancel">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="Approved" caption="Approved">
+					<actions>
+						<action name="CreateEntrancePass" tostage="Created" caption="Create entrance pass">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="ApprovedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="Created" caption="Created">
+					<actions>
+						<action name="HandedOut" tostage="HandedOut" caption="Handed out">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="CreatedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions denyall="true" />
+					<deletepermissions denyall="true" />
+				</stage>
+				<stage name="HandedOut" caption="Handed out" />
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action name="Resubmit" tostage="Requested" caption="Resubmit">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+				<stage name="Canceled" caption="Canceled" stagetype="Canceled">
+					<editpermissions denyall="true" />
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+
+		<!--The third Workflow is the RequestLaptop Workflow, which is a follow-up Workflow for the Applicant Onboarding Workflow.-->
+		<workflowdefinition name="ESOFT_EMP_LaptopRequest" description="Laptop request" descriptionplural="Laptop requests">
+			<customentity>
+				<property name="Description" type="string" length="60" caption="Description" allowempty="false" isdescription="true" />
+				<property name="Employee" type="guid" refersto="Employee" caption="Employee" allowempty="false" />
+				<property name="StartDate" type="date" caption="Start date" allowempty="false" />
+			</customentity>
+			<stages>
+				<stage name="Requested" caption="Requested">
+					<actions>
+						<action name="Approve" tostage="Approved" caption="Approve">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="RequestedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="Approved" caption="Approved">
+					<actions>
+						<action name="Configured" tostage="Configured" caption="Configured">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="ApprovedReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="Configured" caption="Configured">
+					<actions>
+						<action name="HandOut" tostage="HandedOut" caption="Hand out">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+						<action name="ConfiguredReject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions denyall="true" />
+					<deletepermissions denyall="true" />
+				</stage>
+				<stage name="HandedOut" caption="Handed out">
+				</stage>
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action name="Resubmit" tostage="Requested" caption="Resubmit">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+				<stage name="Canceled" caption="Canceled" stagetype="Canceled">
+					<editpermissions denyall="true" />
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+	</workflowdefinitions>
+
+	<!--The roles section defines the roles that are used in the extension.
+		In this Workflow we define 3 new roles. These roles exist only in the extension 
+		and are not part of the standard roles in Exact Online.
+		After installing the extension, these roles can be assigned to users in the User Roles screen, in tab "Extensions".
+	-->
+	<roles>
+		<!--If you combine extensionrole and existingrole, then extensionrole must go first -->	
+		<extensionrole name="ESOFT_EMP_Applicant" caption="Manage applicants">
+			<customentity name="ESOFT_EMP_Applicant" permission="Full" />
+			<customentity name="ESOFT_EMP_EntrancePassRequest" permission="View Create" />
+			<customentity name="ESOFT_EMP_LaptopRequest" permission="View Create" />
+		</extensionrole>
+		<extensionrole name="ESOFT_EMP_EntrancePassRequest" caption="Manage entrance passes">
+			<customentity name="ESOFT_EMP_EntrancePassRequest" permission="Full" />
+			<customentity name="ESOFT_EMP_Applicant" permission="View" />
+		</extensionrole>
+		<extensionrole name="ESOFT_EMP_LaptopRequest" caption="Manage laptops">
+			<customentity name="ESOFT_EMP_LaptopRequest" permission="Full" />
+			<customentity name="ESOFT_EMP_Applicant" permission="View" />
+		</extensionrole>
+		<!--If you would also like to include existingrole permissions, you can specify them below the extensionroles.
+			In this case, we give users with roles Manage employees all permissions.
+			If you want to give all users permissions, then you can use role id="100" (All users).
+		-->		
+		<existingrole id="251" caption="Manage employees">
+			<customentity name="ESOFT_EMP_Applicant" permission="Full" />
+		</existingrole>
+	</roles>
+
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<!--You can find the menus for this Workflow in a new section "Applicants" in the "Employees" menu-->
+			<tab id="Employees" existing="true">
+				<section id="Applicants" caption="Applicants" existing="false">
+					<subsection id="Applicants" caption="Applicants" existing="false">
+						<link id="OverviewApplicants" caption="Overview applicants" existing="false" href="ExtWorkflows.aspx?Entity=ESOFT_EMP_Applicant" />
+						<link id="NewApplicant" caption="New applicant" existing="false" showinnewtab="false" href="ExtWorkflow.aspx?Entity=ESOFT_EMP_Applicant&amp;BCAction=0" />
+						<link id="Pivot" caption="Applicant pivot reports" existing="false" href="ExtWorkflowPivots.aspx?Entity=ESOFT_EMP_Applicant" />
+					</subsection>
+					<subsection id="EntrancePass" caption="Entrance passes" existing="false">
+						<link id="OverviewEntrancePassRequests" caption="Overview entrance pass requests" existing="false" href="ExtWorkflows.aspx?Entity=ESOFT_EMP_EntrancePassRequest" />
+						<link id="NewEntrancePassReuqest" caption="New entrance pass request" existing="false" showinnewtab="false" href="ExtWorkflow.aspx?Entity=ESOFT_EMP_EntrancePassRequest&amp;BCAction=0" />
+						<link id="Pivot" caption="Entrance pass pivot reports" existing="false" href="ExtWorkflowPivots.aspx?Entity=ESOFT_EMP_EntrancePassRequest" />
+					</subsection>
+					<subsection id="Laptop" caption="Laptops" existing="false">
+						<link id="OverviewLaptopRequests" caption="Overview laptop requests" existing="false" href="ExtWorkflows.aspx?Entity=ESOFT_EMP_LaptopRequest" />
+						<link id="NewLaptopReuqest" caption="New laptop request" existing="false" showinnewtab="false" href="ExtWorkflow.aspx?Entity=ESOFT_EMP_LaptopRequest&amp;BCAction=0" />
+						<link id="Pivot" caption="Laptop request pivot reports" existing="false" href="ExtWorkflowPivots.aspx?Entity=ESOFT_EMP_LaptopRequest" />
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+
+	<applicationextensions>
+		<!--In the applicationextension, you can define your own sections, 
+			and add fields to these sections instead of the csGeneral section.
+			Fields are added to the csGeneral section if they are not defined in any section of the applicationextension
+			The csPicture section has the possibility to upload a picture.
+			The csAttachment section allows you to upload multiple attachments.
+		-->
+		<applicationextension pagetype="Maintenance" entity="ESOFT_EMP_Applicant">
+			<cardsection id="csHrm" existing="false" caption="HRM">
+				<field id="StartDate" datafield="StartDate" type="date" caption="Start date" />
+				<field id="HiringManager" datafield="HiringManager" type="guid" caption="Hiring manager" />
+				<field id="NeedsLaptop" datafield="NeedsLaptop" type="boolean" caption="Needs laptop" />
+				<field id="IsContractor" datafield="IsContractor" type="boolean" caption="Contractor" />
+			</cardsection>
+
+			<cardsection id="csPicture" existing="false" caption="Picture">
+				<field id="ApplicantPicture" datafield="ApplicantPicture" type="picture" caption="Picture" />
+			</cardsection>
+
+			<cardsection id="csAttachment" existing="false" caption="Attachment">
+				<field id="WorkflowAttachment" datafield="WorkflowAttachment" type="attachment" caption="Attachment" />
+			</cardsection>
+			
+			<cardsection id="csRemarks" existing="false" caption="Remarks">
+				<field id="Remark" datafield="WorkflowRemarks" type="string" caption="Workflow remarks" controltype="textarea" />
+			</cardsection>
+		</applicationextension>
+	</applicationextensions>
+
+	<!--In the translationextension section you can define translations of workflows, stages, actions and properties-->
+	<translationextensions>
+		<translation id="ESOFT_EMP_ApplicantOnboarding">
+			<language code="en">Applicant Onboarding</language>
+			<language code="nl">Inwerken van sollicitanten</language>
+		</translation>
+		<translation id="ESOFT_EMP_ProposalCreatedStageTranslation">
+			<language code="en">Proposal created</language>
+			<language code="nl">Voorstel gemaakt</language>
+		</translation>
+		<translation id="ESOFT_EMP_CreateProposalActionTranslation">
+			<language code="en">Create proposal</language>
+			<language code="nl">Voorstel maken</language>
+		</translation>
+	</translationextensions>
+</extension>

@@ -1,0 +1,1461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="idguidtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="idtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z_]([A-Za-z0-9_])*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="languagecode">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-z]{2}(-[A-Z]{2})?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="textwithdotallowed">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[\w.]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="textwithdashallowed">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[\w-]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="assemblyorclassnametype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[^.]([A-Za-z0-9_.])*[^.]"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="majorminorpatchversiontype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9]+)\.([0-9]+)\.([0-9]+)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="nowhitespacestringtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z_]([A-Za-z0-9_])*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="termidtype">
+		<xs:restriction base="xs:unsignedInt"/>
+	</xs:simpleType>
+	<xs:simpleType name="featuresettype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Za-z_]([A-Za-z0-9_])*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="extensioncodetype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{3,5}_[_A-Za-z0-9]+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="applicationtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([A-Za-z0-9_.-])+\.aspx"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hreftype">
+		<xs:restriction base="xs:string">
+			<!-- 
+				Allows http:// or https:// 
+				Domain address can have colon : or underscore _
+				Special characters allowed after the hostname are as below.
+					 @%_+.~#?;&/={}()',
+				Other special characters must be escaped.
+				Disallows name with @ before the domain address (e.g. http://myName@www.google.com)
+			-->
+			<xs:pattern value="((http(s)?:\/\/[-a-zA-Z0-9._]{1,256}(:[0-9]{2,6})?(\/?[-a-zA-Z0-9%_\+.~#?;&amp;={}()',&lt;&gt;/:]*)?)|(\/?[-a-zA-Z0-9%_\+.~#;&amp;={}()',&lt;&gt;/]+(\?[-a-zA-Z0-9%_\+.~#;&amp;={}()',&lt;&gt;/:]*)?)?)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="legislationtype">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Any"/>
+					<xs:enumeration value="Netherlands"/>
+					<xs:enumeration value="Belgium"/>
+					<xs:enumeration value="Germany"/>
+					<xs:enumeration value="NetherlandsAntilles"/>
+					<xs:enumeration value="Turkey"/>
+					<xs:enumeration value="Luxembourg"/>
+					<xs:enumeration value="UnitedKingdom"/>
+					<xs:enumeration value="France"/>
+					<xs:enumeration value="UnitedStates"/>
+					<xs:enumeration value="Spain"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="featurechecktype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="All"/>
+			<xs:enumeration value="Any"/>
+			<xs:enumeration value="None"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="permissiontype">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="None"/>
+					<xs:enumeration value="View"/>
+					<xs:enumeration value="Update"/>
+					<xs:enumeration value="Create"/>
+					<xs:enumeration value="Delete"/>
+					<xs:enumeration value="Full"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="propertytypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="date"/>
+			<xs:enumeration value="guid"/>
+			<xs:enumeration value="numericstring"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="customentitypropertytypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="date"/>
+			<xs:enumeration value="guid"/>
+			<xs:enumeration value="numericstring"/>
+			<xs:enumeration value="picture"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="workflowpropertytypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="date"/>
+			<xs:enumeration value="guid"/>
+			<xs:enumeration value="numericstring"/>
+			<xs:enumeration value="picture"/>
+			<xs:enumeration value="attachment"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="fieldtypetype">		
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="date"/>
+			<xs:enumeration value="guid"/>
+			<xs:enumeration value="hyperlink"/>
+			<xs:enumeration value="picture"/>
+			<xs:enumeration value="attachment"/>
+		</xs:restriction>
+	</xs:simpleType>		
+	<xs:simpleType name="gridcolumntypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="integer"/>
+			<xs:enumeration value="double"/>
+			<xs:enumeration value="date"/>
+			<xs:enumeration value="guid"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="referstotype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Item"/>
+			<xs:enumeration value="Account"/>
+			<xs:enumeration value="Project"/>
+			<xs:enumeration value="Opportunity"/>
+			<xs:enumeration value="SalesOrder"/>
+			<xs:enumeration value="Contact"/>
+			<xs:enumeration value="User"/>
+			<xs:enumeration value="Employee"/>
+			<xs:enumeration value="Document"/>
+			<xs:enumeration value="GLAccount"/>
+			<xs:enumeration value="Team"/>
+			<xs:enumeration value="Costcenter"/>
+			<xs:enumeration value="Costunit"/>
+			<xs:enumeration value="Journal"/>
+			<xs:enumeration value="Quotation"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="controltypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="default"/>
+			<xs:enumeration value="textarea"/>
+			<xs:enumeration value="checkboxlist"/>
+			<xs:enumeration value="list"/>
+			<xs:enumeration value="radiobuttonlist"/>
+			<xs:enumeration value="inputfield"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="fieldcontroltype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="default"/>
+			<xs:enumeration value="textarea"/>
+			<xs:enumeration value="list"/>
+			<xs:enumeration value="radiobuttonlist"/>
+			<xs:enumeration value="inputfield"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="custompropertyrelationtype">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="ExpressionDefault"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="megamenuidtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MegaMenu"/>
+			<xs:enumeration value="MegaMenuLocked"/>
+			<xs:enumeration value="MegaMenuViewUser"/>
+			<xs:enumeration value="MegaMenuInvoiceUser"/>
+			<xs:enumeration value="MegaMenuApproverUser"/>
+			<xs:enumeration value="MegaMenuClient"/>
+			<xs:enumeration value="MegaMenuDeclaration"/>
+			<xs:enumeration value="MegaMenuESS"/>
+			<xs:enumeration value="MegaMenuExactGo"/>
+			<xs:enumeration value="MegaMenuInvoiceUserE4B"/>
+			<xs:enumeration value="MegaMenuTBPortal"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="quickmenuidtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Accountancy"/>
+			<xs:enumeration value="Accounting"/>
+			<xs:enumeration value="Manufacturing"/>
+			<xs:enumeration value="PS"/>
+			<xs:enumeration value="Wholesale"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="returntypetype">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Bool"/>
+					<xs:enumeration value="Int"/>
+					<xs:enumeration value="Long"/>
+					<xs:enumeration value="Double"/>
+					<xs:enumeration value="String"/>
+					<xs:enumeration value="DateTime"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="propertyStates">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="None"/>
+					<xs:enumeration value="AfterAddNew"/>
+					<xs:enumeration value="BeforeInsert"/>
+					<xs:enumeration value="BeforeUpdate"/>
+					<xs:enumeration value="OnValidate"/>
+					<xs:enumeration value="Fixed"/>
+					<xs:enumeration value="Overwrite"/>
+					<xs:enumeration value="AfterEdit"/>
+					<xs:enumeration value="AfterCopy"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="stagetypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None"/>
+			<xs:enumeration value="New"/>
+			<xs:enumeration value="Canceled"/>
+			<xs:enumeration value="Restarted"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="powerbireportembeddedlink">
+		<xs:restriction base="hreftype">
+			<xs:pattern value="(http[s]?:\/\/)(app.powerbi.com\/reportEmbed\?)(.{0,})"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="googlesheetsembeddedlink">
+		<xs:restriction base="hreftype">
+			<xs:pattern value="(http[s]?:\/\/)(docs.google.com\/spreadsheets\/d\/)(.{0,})"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="listitemstringtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[^,;]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="translationidtype">
+		<xs:restriction base="nowhitespacestringtype">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sqltablecolumnlength">
+		<xs:restriction base="nowhitespacestringtype">
+			<xs:maxLength value="124"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="deleteactiontype">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="setnull"/>
+					<xs:enumeration value="restrict"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="stringmaxlength255">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+	<xs:simpleType name="stringmaxlength60">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="60"/>
+        </xs:restriction>
+    </xs:simpleType>
+	<xs:complexType name="mandatoryfeaturesetstype">
+		<xs:sequence>
+			<xs:element name="featureset" type="featuresettype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="forbiddenfeaturesetstype">
+		<xs:sequence>
+			<xs:element name="featureset" type="featuresettype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="azurefunctionstype">
+		<xs:sequence>
+			<xs:element name="function" type="functiontype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="functiontype">
+		<xs:sequence>
+			<xs:element name="endpoint" type="hreftype" minOccurs="1"/>
+			<xs:element name="authorization" minOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:choice>
+							<xs:element name="keyvault">
+								<xs:complexType>
+									<xs:attribute name="endpoint" type="xs:string" use="required"/>
+									<xs:attribute name="secret" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="apikey" type="xs:string"/>
+						</xs:choice>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="parameters">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="parameter" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="required"/>
+								<xs:attribute name="required" type="xs:boolean" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="caption" type="xs:string" use="required"/>
+		<xs:attribute name="returntype" type="returntypetype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="entitiestype">
+		<xs:sequence>
+			<xs:element name="entity" type="entitytype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="entitytype">
+		<xs:sequence>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="property" type="propertytype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+		<xs:attribute name="table" type="sqltablecolumnlength" use="required"/>
+		<xs:attribute name="extensiontable" type="sqltablecolumnlength" use="required"/>
+		<xs:attribute name="businesscomponent" type="nowhitespacestringtype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="propertytype">
+		<xs:sequence>
+			<xs:element name="listitems" type="listitemstype" minOccurs="0" maxOccurs="1">
+				<xs:unique name="unique_value">
+					<xs:selector xpath="listitem"/>
+					<xs:field xpath="@value"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="einvoiceelement" type="einvoiceelementtype" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+		<xs:attribute name="columnname" type="sqltablecolumnlength" use="required"/>
+		<xs:attribute name="caption" type="xs:string" use="required"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="type" type="propertytypetype" use="required"/>
+		<xs:attribute name="length" use="optional">
+			<xs:simpleType>
+				<xs:restriction base="xs:unsignedInt">
+					<xs:minInclusive value="1"/>
+					<xs:maxInclusive value="8000"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="allowempty" type="xs:boolean" use="optional"/>
+		<xs:attribute name="scale" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="propertyStates" type="propertyStates" use="optional"/>
+		<xs:attribute name="deleteaction" type="deleteactiontype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="listitemstype">
+		<xs:sequence>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="listitem" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="value" type="listitemstringtype" use="required"/>
+					<xs:attribute name="caption" type="listitemstringtype" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="allowempty" type="xs:boolean" use="optional"/>
+		<xs:attribute name="listdefinitionid" type="nowhitespacestringtype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="businesscomponentextensionstype">
+		<xs:sequence>
+			<xs:element name="businesscomponent" type="businesscomponenttype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="businesscomponenttype">
+		<xs:sequence>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="azurevalidations" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="functionalcomponent" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element minOccurs="0" maxOccurs="unbounded" name="inputproperty">
+										<xs:complexType>
+											<xs:attribute name="property" type="nowhitespacestringtype" use="required"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="targetproperty" type="nowhitespacestringtype" use="required"/>
+								<xs:attribute name="azureoperationname" type="nowhitespacestringtype" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="azurefunctionendpoint" type="xs:anyURI" use="required"/>
+					<xs:attribute name="azuresecretref" type="textwithdashallowed" use="optional"/>
+					<xs:attribute name="apikey" type="xs:string" use="optional"/>
+				</xs:complexType>
+				<!-- Validate either azuresecretref or apikey attribute specified (but not both). -->
+				<xs:key name="AzureSecretRefOrApiKey">
+					<xs:selector xpath="."/>
+					<xs:field xpath="@azuresecretref | @apikey"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="references" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="reference" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+											</xs:sequence>
+											<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+											<xs:attribute name="columnname" type="nowhitespacestringtype" use="required"/>
+											<xs:attribute name="caption" type="xs:string" use="optional"/>
+											<xs:attribute name="captionid" type="termidtype" use="optional"/>
+											<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+											<xs:attribute name="domainid" type="idguidtype" use="optional"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="forproperty" type="nowhitespacestringtype" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="functionalcomponent" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence maxOccurs="1" minOccurs="0">
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="expression" type="xs:string"/>
+					</xs:sequence>
+					<xs:attribute name="type" type="custompropertyrelationtype" use="required"/>
+					<xs:attribute name="targetproperty" type="nowhitespacestringtype" use="required"/>
+					<xs:attribute name="class" type="assemblyorclassnametype" use="optional"/>
+					<xs:attribute name="assembly" type="assemblyorclassnametype" use="optional"/>
+					<xs:attribute name="version" type="majorminorpatchversiontype" use="optional"/>
+					<xs:attribute name="propertyStates" type="propertyStates" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="megamenuextensionstype">
+		<xs:sequence>
+			<xs:element name="megamenuextension" type="megamenuextensiontype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="megamenuextensiontype">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="tab">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="section" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element minOccurs="0" maxOccurs="unbounded" name="subsection">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+												<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+												<xs:element minOccurs="0" maxOccurs="unbounded" name="link">
+													<xs:complexType>
+														<xs:all minOccurs="0">
+															<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+														</xs:all>
+														<xs:attribute name="id" type="idtype" use="required"/>
+														<xs:attribute name="caption" type="xs:string" use="optional"/>
+														<xs:attribute name="captionid" type="termidtype" use="optional"/>
+														<xs:attribute name="href" type="hreftype" use="optional"/>
+														<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+														<xs:attribute name="existing" type="xs:boolean" use="required"/>
+														<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+													</xs:complexType>
+												</xs:element>
+												<xs:element minOccurs="0" maxOccurs="unbounded" name="powerbilink">
+													<xs:complexType>
+														<xs:all minOccurs="1">
+															<xs:element name="powerbireportembedlink" type="powerbireportembeddedlink" minOccurs="1" maxOccurs="1"/>
+															<xs:element name="pagetitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+														</xs:all>
+														<xs:attribute name="id" type="idtype" use="required"/>
+														<xs:attribute name="caption" type="xs:string" use="required"/>
+														<xs:attribute name="captionid" type="termidtype" use="optional"/>
+													</xs:complexType>
+												</xs:element>
+												<xs:element minOccurs="0" maxOccurs="unbounded" name="googlesheetslink">
+													<xs:complexType>
+														<xs:all minOccurs="1">
+															<xs:element name="googlesheetsembedlink" type="googlesheetsembeddedlink" minOccurs="1" maxOccurs="1"/>
+															<xs:element name="pagetitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+														</xs:all>
+														<xs:attribute name="id" type="idtype" use="required"/>
+														<xs:attribute name="caption" type="xs:string" use="required"/>
+														<xs:attribute name="captionid" type="termidtype" use="optional"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+											<xs:attribute name="id" type="idtype" use="required"/>
+											<xs:attribute name="caption" type="xs:string" use="optional"/>
+											<xs:attribute name="captionid" type="termidtype" use="optional"/>
+											<xs:attribute name="existing" type="xs:boolean" use="required"/>
+											<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="id" type="idtype" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="optional"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="existing" type="xs:boolean" use="required"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="caption" type="xs:string" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="menuid" type="megamenuidtype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="quickmenuextensionstype">
+		<xs:sequence>
+			<xs:element name="quickmenuextension" type="quickmenuextensiontype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="quickmenuextensiontype">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="subsection">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element minOccurs="0" maxOccurs="unbounded" name="link">
+							<xs:complexType mixed="true">
+								<xs:all>
+									<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:all>
+								<xs:attribute name="id" type="idtype" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="optional"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="href" type="hreftype" use="optional"/>
+								<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+								<xs:attribute name="existing" type="xs:boolean" use="required"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="caption" type="xs:string" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="menuid" type="quickmenuidtype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="companysettingsextensionstype">
+		<xs:sequence>
+			<xs:element name="tab" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="section" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="unbounded"/>
+									<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="setting" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="id" type="idtype" use="required"/>
+											<xs:attribute name="caption" type="xs:string" use="required"/>
+											<xs:attribute name="captionid" type="termidtype" use="optional"/>
+											<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+											<xs:attribute name="type" type="fieldtypetype" use="required"/>
+											<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+											<xs:attribute name="defaultvalue" type="xs:string" use="optional"/>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="id" type="idtype" use="required"/>
+								<xs:attribute name="existing" type="xs:boolean" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="optional"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="caption" type="xs:string" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="translationextensionstype">
+		<xs:sequence>
+			<xs:element name="translation" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="language" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="code" type="languagecode" use="required"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="translationidtype" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="applicationextensionstype">
+		<xs:sequence>
+			<xs:element name="applicationextension" type="applicationextensiontype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="cardsectiontype">
+		<xs:sequence>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="field" type="fieldtype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="idtype" use="required"/>
+		<xs:attribute name="existing" type="xs:boolean" use="required"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="contentsectionrowtype">
+		<xs:sequence>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="field" type="fieldtype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="idtype" use="required"/>
+		<xs:attribute name="existing" type="xs:boolean" use="required"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="gridpageheadertype">
+		<xs:sequence>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="section" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="field" type="gridpageheaderfieldtype" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="filterblocktype">
+		<xs:sequence>
+			<xs:element name="filter" type="filtertype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="columngrouptype">
+		<xs:sequence>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="join" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="forcolumn" type="nowhitespacestringtype" use="optional"/>
+					<xs:attribute name="extensiontable" type="sqltablecolumnlength" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="column" type="columntype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="idtype" use="required"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="existing" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="fieldtype">
+		<xs:all>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="idtype" use="optional"/>
+		<xs:attribute name="type" type="fieldtypetype" use="optional"/>
+		<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="href" type="hreftype" use="optional"/>
+		<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+		<xs:attribute name="readonly" type="xs:boolean" use="optional"/>
+		<xs:attribute name="controltype" type="fieldcontroltype" use="optional"/>
+		<xs:attribute name="datafield" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="datasource" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="existing" type="xs:boolean" use="optional"/>
+		<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+		<xs:attribute name="rows" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="width" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="listdefinitionid" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="uploadmultiple" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="gridpageheaderfieldtype">
+		<xs:all>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="idtype" use="optional"/>
+		<xs:attribute name="type" type="gridcolumntypetype" use="optional"/>
+		<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="readonly" type="xs:boolean" use="optional"/>
+		<xs:attribute name="controltype" type="controltypetype" use="optional"/>
+		<xs:attribute name="listdefinitionid" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="datafield" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="datasource" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="existing" type="xs:boolean" use="optional"/>
+		<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="filtertype">
+		<xs:all>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="idtype" use="required"/>
+		<xs:attribute name="type" type="fieldtypetype" use="optional"/>
+		<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="controltype" type="controltypetype" use="optional"/>
+		<xs:attribute name="listdefinitionid" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="existing" type="xs:boolean" use="optional"/>
+		<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="columntype">
+		<xs:all>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="idtype" use="optional"/>
+		<xs:attribute name="type" type="fieldtypetype" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="field" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="filterid" type="idtype" use="optional"/>
+		<xs:attribute name="controltype" type="controltypetype" use="optional"/>
+		<xs:attribute name="listdefinitionid" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="existing" type="xs:boolean" use="optional"/>
+		<xs:attribute name="scale" type="xs:unsignedInt" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="gridcolumntype">
+		<xs:all>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="idtype" use="optional"/>
+		<xs:attribute name="datafield" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="datasource" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="type" type="gridcolumntypetype" use="optional"/>
+		<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="caption" type="xs:string" use="optional"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="readonly" type="xs:boolean" use="optional"/>
+		<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+		<xs:attribute name="width" type="xs:string" use="optional"/>
+		<xs:attribute name="controltype" type="controltypetype" use="optional"/>
+		<xs:attribute name="listdefinitionid" type="nowhitespacestringtype" use="optional"/>
+		<xs:attribute name="existing" type="xs:boolean" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="showreference" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="applicationextensiontype">
+		<xs:sequence>
+			<xs:element name="button" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					</xs:all>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="caption" type="xs:string" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+					<xs:attribute name="href" type="hreftype" use="optional"/>
+					<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="powerbibutton" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:all minOccurs="1">
+						<xs:element name="powerbireportembedlink" type="powerbireportembeddedlink" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="pagetitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					</xs:all>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="caption" type="xs:string" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+					<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="googlesheetsbutton" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:all minOccurs="1">
+						<xs:element name="googlesheetsembedlink" type="googlesheetsembeddedlink" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="pagetitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+					</xs:all>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="caption" type="xs:string" use="optional"/>
+					<xs:attribute name="captionid" type="termidtype" use="optional"/>
+					<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+					<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+					<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="monitor" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="monitoritem" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:all>
+								<xs:attribute name="id" type="idtype" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="optional"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+								<xs:attribute name="href" type="hreftype" use="optional"/>
+								<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+								<xs:attribute name="image" type="xs:string" use="optional"/>
+								<xs:attribute name="existing" type="xs:boolean" use="required"/>
+								<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="powerbimonitoritem" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:all minOccurs="1">
+									<xs:element name="powerbireportembedlink" type="powerbireportembeddedlink" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="pagetitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:all>
+								<xs:attribute name="id" type="idtype" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="optional"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+								<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+								<xs:attribute name="image" type="xs:string" use="optional"/>
+								<xs:attribute name="existing" type="xs:boolean" use="required"/>
+								<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="googlesheetsmonitoritem" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:all minOccurs="1">
+									<xs:element name="googlesheetsembedlink" type="googlesheetsembeddedlink" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="visibleexpression" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="functionpoint" type="xs:string" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="permission" type="permissiontype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="pagetitle" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:all>
+								<xs:attribute name="id" type="idtype" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="optional"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+								<xs:attribute name="showinnewtab" type="xs:boolean" use="optional"/>
+								<xs:attribute name="image" type="xs:string" use="optional"/>
+								<xs:attribute name="existing" type="xs:boolean" use="required"/>
+								<xs:attribute name="positionbefore" type="idtype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="idtype" use="required"/>
+					<xs:attribute name="existing" type="xs:boolean" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="cardsection" type="cardsectiontype" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="contentsectionrow" type="contentsectionrowtype" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="gridpageheader" type="gridpageheadertype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="gridcolumn" type="gridcolumntype" minOccurs="0" maxOccurs="unbounded"/>
+			<!-- WE ARE NOT SURE ABOUT THE FILTER BLOCK-->
+			<xs:element name="filterblock" type="filterblocktype" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="columngroup" type="columngrouptype" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="application" type="applicationtype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="extensiontype">
+		<xs:attribute name="code" type="extensioncodetype" use="required"/>
+		<xs:attribute name="version" type="majorminorpatchversiontype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="customentitiestype">
+		<xs:sequence>
+			<xs:element name="customentity" type="customentitytype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="customentitytype">
+		<xs:sequence>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="property" type="customentitypropertytype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+		<xs:attribute name="table" type="sqltablecolumnlength" use="required"/>
+		<xs:attribute name="description" type="xs:string" use="required"/>
+		<xs:attribute name="descriptionplural" type="xs:string" use="required"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="translationpluralid" type="translationidtype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="customentitypropertytype">
+		<xs:sequence>
+			<xs:element name="listitems" type="listitemstype" minOccurs="0" maxOccurs="1">
+				<xs:unique name="unique_listvalue">
+					<xs:selector xpath="listitem"/>
+					<xs:field xpath="@value"/>
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="sqltablecolumnlength" use="required"/>
+		<xs:attribute name="caption" type="xs:string" use="required"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="type" type="customentitypropertytypetype" use="required"/>
+		<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional"/>
+		<xs:attribute name="mandatoryfeatureset" type="featuresettype" use="optional"/>
+		<xs:attribute name="allowempty" type="xs:boolean" use="optional"/>
+		<xs:attribute name="unique" type="xs:boolean" use="optional"/>
+		<xs:attribute name="iscode" type="xs:boolean" use="optional"/>
+		<xs:attribute name="isdescription" type="xs:boolean" use="optional"/>
+		<xs:attribute name="autoincrement" type="xs:boolean" use="optional"/>
+		<xs:attribute name="startvalue" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="scale" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="deleteaction" type="deleteactiontype" use="optional"/>
+	</xs:complexType>
+	<xs:simpleType name="pagetypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Maintenance"/>
+			<xs:enumeration value="Overview"/>
+			<xs:enumeration value="Card"/>
+			<xs:enumeration value="Entry"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="referstocustomentitytype">
+		<xs:restriction base="nowhitespacestringtype"/>
+	</xs:simpleType>
+	<xs:complexType name="customentityroledefinition">
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="permission" type="permissiontype" use="required" />
+	</xs:complexType>
+	<xs:complexType name="eolroletype">
+		<xs:sequence>
+			<xs:element name="customentity" type="customentityroledefinition" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:int" use="required" />
+		<xs:attribute name="name" type="xs:string" use="optional" />
+		<xs:attribute name="caption" type="xs:string" use="optional" />
+	</xs:complexType>
+	<xs:complexType name="extensionroletype">
+		<xs:sequence>
+			<xs:element name="customentity" type="customentityroledefinition" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="caption" type="xs:string" use="required" />
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="nowhitespacestringtype" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="rolesType">
+		<xs:sequence>
+			<xs:element name="extensionrole" type="extensionroletype" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="existingrole" type="eolroletype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="workflowactorinvolvementtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="User"/>
+			<xs:enumeration value="UserManager"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="workflowuserinvolvementtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Creator"/>
+			<xs:enumeration value="User"/>
+			<xs:enumeration value="UserManager"/>
+			<xs:enumeration value="AccountManager"/>
+			<xs:enumeration value="ProjectManager"/>
+			<xs:enumeration value="Employee"/>
+			<xs:enumeration value="EmployeeManager"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="automationactiontypetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Create"/>
+			<xs:enumeration value="Update"/>
+			<xs:enumeration value="Delete"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="workflowstagetype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[_A-Za-z0-9]{1,60}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="workflowdefinitionstype">
+		<xs:sequence>
+			<xs:element name="workflowdefinition" type="workflowdefinitiontype" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:group name="permissionstype">
+		<xs:sequence>
+			<xs:element name="user" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="involvementtype" type="workflowuserinvolvementtype" use="required"/>
+					<xs:attribute name="property" type="nowhitespacestringtype" use="optional"/>
+					<xs:attribute name="customentityproperty" type="nowhitespacestringtype" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="team" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="code" type="xs:string" use="optional"/>
+					<xs:attribute name="property" type="nowhitespacestringtype" use="optional"/>
+					<xs:attribute name="role" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="actor" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="involvementtype" type="workflowactorinvolvementtype" use="optional"/>
+					<xs:attribute name="action" type="nowhitespacestringtype" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="existingrole" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="id" type ="xs:int" use="required"/>
+					<xs:attribute name="name" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="extensionrole" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="actionpermissionstype">
+		<xs:group ref="permissionstype" minOccurs="0" maxOccurs="1" />
+	</xs:complexType>
+	<xs:complexType name="stagepermissionstype">
+		<xs:group ref="permissionstype" minOccurs="0" maxOccurs="1" />
+		<xs:attribute name="denyall" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="automationstype">
+		<xs:sequence>
+			<xs:element name="automation" type="automationtype" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="automationtype">
+		<xs:sequence>
+			<xs:element name="conditionexpression" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="automationaction" type="automationactiontype" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="description" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="skiptype">
+		<xs:sequence>
+			<xs:element name="condition" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="tostage" type="workflowstagetype" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="automationactiontype">
+		<xs:sequence>
+			<xs:element name="enabledexpression" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="properties" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="property" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:attribute name="name" type="stringmaxlength60" use="required"/>
+								<xs:attribute name="valueexpression" type="xs:string" use="optional"/>
+								<xs:attribute name="literalvalue" type="xs:string" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="cancontinueexpression" type="xs:string" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="type" type="automationactiontypetype" use="required"/>
+		<xs:attribute name="businesscomponent" type="stringmaxlength60" use="required"/>
+		<xs:attribute name="description" type="stringmaxlength255" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="workflowcustomentitytype">
+		<xs:sequence>
+			<xs:element name="documentation" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatorylegislation" type="legislationtype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="mandatoryfeaturesets" type="mandatoryfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="forbiddenfeaturesets" type="forbiddenfeaturesetstype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="featurecheck" type="featurechecktype" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="property" type="workflowcustomentitypropertytype" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="table" type="sqltablecolumnlength" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="workflowcustomentitypropertytype">
+		<xs:sequence>
+			<xs:element name="listitems" type="listitemstype" minOccurs="0" maxOccurs="1">
+				<xs:unique name="wflunique_listvalue">
+					<xs:selector xpath="listitem"/>
+					<xs:field xpath="@value"/>
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="sqltablecolumnlength" use="required"/>
+		<xs:attribute name="caption" type="stringmaxlength255" use="required"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="type" type="workflowpropertytypetype" use="required"/>
+		<xs:attribute name="length" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="refersto" type="referstotype" use="optional"/>
+		<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional"/>
+		<xs:attribute name="mandatoryfeatureset" type="featuresettype" use="optional"/>
+		<xs:attribute name="allowempty" type="xs:boolean" use="optional"/>
+		<xs:attribute name="unique" type="xs:boolean" use="optional"/>
+		<xs:attribute name="iscode" type="xs:boolean" use="optional"/>
+		<xs:attribute name="isdescription" type="xs:boolean" use="optional"/>
+		<xs:attribute name="autoincrement" type="xs:boolean" use="optional"/>
+		<xs:attribute name="startvalue" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="scale" type="xs:unsignedInt" use="optional"/>
+		<xs:attribute name="crossdivision" type="xs:boolean" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="workflowdefinitiontype">
+		<xs:sequence>
+			<xs:element name="customentity" type="workflowcustomentitytype"/>
+			<xs:element name="stages" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="stage" minOccurs="2" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="propertysettings" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="propertysetting" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:attribute name="property" type="nowhitespacestringtype" use="required"/>
+														<xs:attribute name="mandatory" type="xs:boolean" use="optional"/>
+														<xs:attribute name="visible" type="xs:boolean" use="optional"/>
+														<xs:attribute name="enabled" type="xs:boolean" use="optional"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="actions" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="action" minOccurs="0" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="permissions" type="actionpermissionstype" minOccurs="0" maxOccurs="1"/>
+															<xs:element name="skip" type="skiptype" minOccurs="0" maxOccurs="unbounded"/>
+															<xs:element name="automations" type="automationstype" minOccurs="0" maxOccurs="1"/>
+														</xs:sequence>
+														<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+														<xs:attribute name="tostage" type="workflowstagetype" use="required"/>
+														<xs:attribute name="caption" type="xs:string" use="required"/>
+														<xs:attribute name="captionid" type="termidtype" use="optional"/>
+														<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+														<xs:attribute name="triggerdescription" type="stringmaxlength255" use="optional"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="editpermissions" type="stagepermissionstype" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="deletepermissions" type="stagepermissionstype" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+								<xs:attribute name="name" type="nowhitespacestringtype" use="required"/>
+								<xs:attribute name="caption" type="xs:string" use="required"/>
+								<xs:attribute name="captionid" type="termidtype" use="optional"/>
+								<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+								<xs:attribute name="defaultaction" type="xs:string" use="optional"/>
+								<xs:attribute name="stagetype" type="stagetypetype" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="stringmaxlength60" use="required"/>
+		<xs:attribute name="description" type="stringmaxlength255" use="required"/>
+		<xs:attribute name="descriptionplural" type="xs:string" use="required"/>
+		<xs:attribute name="captionid" type="termidtype" use="optional"/>
+		<xs:attribute name="translationid" type="translationidtype" use="optional"/>
+		<xs:attribute name="translationpluralid" type="translationidtype" use="optional"/>
+	</xs:complexType>
+	<xs:simpleType name="einvoiceelementtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ContractDocumentReference" />
+			<xs:enumeration value="ProjectReference" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="extension" type="extensiontype">
+		<xs:unique name="unique_applicationextension_application">
+			<xs:selector xpath="applicationextensions/applicationextension" />
+			<xs:field xpath="@application" />
+		</xs:unique>
+	</xs:element>
+</xs:schema>

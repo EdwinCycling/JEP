@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension code="ESOFT_ExtDemo" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Extensions.xsd">
+	<entities>
+		<!--
+		In the entities section you can create Extension tables which extend existing division specific
+		tables.
+		It is not yet possible to create completely new tables.
+		In an entity definition you define:
+		- The table that you extend and the Extension table name
+		- The business component
+		Extension columns are automatically available in layouts.
+		-->
+		<entity name="Account" table="Accounts" extensiontable="ESOFT_ExtDemo_Accounts" businesscomponent="Account">
+			<!--
+			A property defines both the column in the Extension table and the corresponding property in the
+			business component.
+			We support the following datatypes: boolean, string, double, int, date, enum, guid
+			-->
+			<!-- boolean -->
+			<property name="ESOFT_ExtDemoLoyaltyMember" columnname="LoyaltyMember" type="boolean" caption="Loyalty member"/>
+			<!-- string -->
+			<property name="ESOFT_ExtDemoLoyaltyCard" columnname="LoyaltyCard" caption="Loyalty card" type="string" length="18" allowempty="false"/>
+			<!-- double -->
+			<property name="ESOFT_ExtDemoLoyaltyDiscount" columnname="LoyaltyDiscount" caption="Loyalty discount" type="double" scale="4"/>
+			<!-- Enum -->
+			<property name="ESOFT_ExtDemoLoyaltyLevel" columnname="LoyaltyLevel" type="integer" caption="Loyalty level">
+				<listitems allowempty="true" listdefinitionid="LoyaltyLevelList">
+					<listitem caption="Entry" value="1"/>
+					<listitem caption="Silver" value="2"/>
+					<listitem caption="Gold" translationid="ESOFT_ExtDemoGoldTranslated" value="3"/>
+					<listitem caption="Platinum" translationid="ESOFT_ExtDemoPlatinumTranslated" value="4"/>
+				</listitems>
+			</property>
+			<!-- string -->
+			<property name="ESOFT_ExtDemoLoyaltyRemarks" columnname="LoyaltyRemarks" caption="Loyalty remarks" type="string" length="400"/>
+			<!--
+			Guid properties: for references only
+			Extension properties can refer to a limited number (7) of existing EOL entities with the refersto
+			attribute.
+			We will support this to other entities in the future
+			-->
+			<property name="ESOFT_ExtDemoContact" columnname="Contact" caption="Extension contact" type="guid" refersto="Contact"/>
+			<property name="ESOFT_ExtDemoSalesOrder" columnname="SalesOrder" caption="Extension SalesOrder" type="guid" refersto="SalesOrder"/>
+		</entity>
+		<!--
+		A property defines both the column in the Extension table and the corresponding property in the
+		business component.
+		We support the following datatypes: boolean, string, double, integer, date, enum, guid
+		-->
+		<entity name="SalesInvoice" table="SalesTransactions" extensiontable="ESOFT_ExtDemo_SalesInvoices" businesscomponent="SalesInvoiceLine">
+			<!-- string -->
+			<property name="ESOFT_ExtDemoColor" columnname="Color" caption="Color" type="string" length="30"/>
+			<!-- string -->
+			<property name="ESOFT_ExtDemoLoyaltyRemarks" columnname="LoyaltyRemarks" caption="Loyalty remarks" type="string" length="400"/>
+			<!-- numericstring -->
+			<property name="ESOFT_ExtDemoEANNumber" columnname="EANNumber" caption="EAN number" type="numericstring" length="18"/>
+			<!-- guid -->
+			<property name="ESOFT_ExtDemoSupplier" columnname="Account" type="guid" refersto="Account" caption="Supplier"/>
+		</entity>
+		<entity name="SalesInvoice" table="SalesTransactions" extensiontable="ESOFT_ExtDemo_SalesInvoiceHeaders" businesscomponent="SalesInvoiceHeader">
+			<property name="ESOFT_ExtDemoExtraDescription" columnname="ExtraDescription" caption="Extra Description" type="string" length="100" />
+		</entity>
+		<entity name="Item" businesscomponent="Item" table="Items" extensiontable="ESOFT_ExtDemo_Items">
+			<property name="ESOFT_ExtDemoAccount" columnname="Account" caption="Extension Customer" type="guid" refersto="Account"/>
+		</entity>
+	</entities>
+	<!--
+	The BusinessComponentExtensions section contains 2 types of extensions:
+	- Default components:
+	-->
+	<businesscomponentextensions>
+		<businesscomponent name="SalesInvoiceLine">
+			<!-- You can reference a new property (type guid) in the same Extension file -->
+			<references>
+				<reference forproperty="ESOFT_ExtDemoSupplier">
+					<property name="ESOFT_ExtDemoSupplier_City" columnname="City"/>
+				</reference>
+			</references>
+		</businesscomponent>
+		<businesscomponent name="Account">
+			<!--
+			- Extends functional validations for business components
+			- Validation logic is written in Azure function exposed with the endpoint specified in
+			azurefunctionendpoint
+			- API key for the HTTP Triggered azure function is kept in Keyvault maintained by Exact and a
+			reference to the key is set here with azuresecretref attribute
+			- azuresecretref can only contain alphanumeric charecters and '-'
+			- Multiple functional components can use a same azure function
+			- targetproperty for a functionalcomponent refers to the name of the field to be validated
+			- azureoperationname refers to the operation within the azure function
+			- Custom validations can be written in an Azure function.
+			- Azure functions run in the Azure subscription of the customer.
+			-->
+			<!-- <azurevalidations azurefunctionendpoint="https://auroraplatformfunctionvalidator.azurewebsites.net" azuresecretref="ESOFT-LoyalPr-EmailValidatorFunctionAPIKeyRef"><functionalcomponent targetproperty="Email" azureoperationname="ValidateEmail"/></azurevalidations> -->
+
+			<references>
+				<!--You can also define reference properties, based on a reference, 
+						for which no existing readonly datasource exists-->
+				<reference forproperty="ESOFT_ExtDemoSalesOrder">
+					<property name="ESOFT_ExtDemoSalesOrder_SalesOrderNumber" columnname="SalesOrderNumber"/>
+				</reference>
+			</references>
+			<functionalcomponent type="ExpressionDefault" targetproperty="ESOFT_ExtDemoLoyaltyCard" propertyStates="AfterAddNew">
+				<expression>
+					Upper('ABC123')
+				</expression>
+			</functionalcomponent>
+			<!-- Custom defaults can be defined with an expression -->
+			<functionalcomponent type="ExpressionDefault" targetproperty="Email" propertyStates="AfterAddNew AfterEdit AfterCopy Overwrite">
+				<expression>
+					Concat('info@', Name, '.com')
+				</expression>
+			</functionalcomponent>
+		</businesscomponent>
+	</businesscomponentextensions>
+	<!-- You can extend the menu on all levels on all levels: tab, section, subsection, entry -->
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<tab id="ExtDemo" caption="Extension demo" existing="false">
+				<mandatoryfeaturesets>
+					<featureset>GeneralPro</featureset>
+				</mandatoryfeaturesets>
+				<section id="ExtDemoSection" caption="Orders" existing="false">
+					<subsection id="SalesOrder" caption="Sales orders" existing="false">
+						<link id="CreateSalesOrder" caption="Create sales order" href="SlsSalesOrderEntry.aspx?BCAction=0&amp;InvoiceStatusHeader=12" existing="false"/>
+						<link id="OverviewSalesOrder" caption="Overview sales orders" href="SlsSalesOrders.aspx" existing="false"/>
+					</subsection>
+				</section>
+				<section id="MenuAccounts" caption="Accounts" existing="false">
+					<subsection id="MenuAccountsSection" caption="Accounts" existing="false">
+						<link id="MenuCreate" caption="Create customer" href="CRMAccountNew.aspx?Supplier=0&amp;Customer=1" existing="false">
+							<functionpoint>
+								Account
+							</functionpoint>
+							<permission>
+								Create
+							</permission>
+						</link>
+						<link id="MenuOverview" caption="Overview accounts" href="CRMAccounts.aspx?Status=C&amp;Selector=List%3atList" existing="false">
+							<functionpoint>
+								Account
+							</functionpoint>
+						</link>
+					</subsection>
+				</section>
+				<!-- Specific element for adding power bi links and google sheets links. -->
+				<section id="MenuPowerBI" caption="Power BI" existing="false">
+					<subsection id="MenuDashboardSubsection1" caption="Power BI reports" existing="false">
+						<link id="MenuDashboardLink1" caption="Favorites" href="https://app.powerbi.com/favorites" existing="false" showinnewtab="true"/>
+						<link id="MenuDashboardLink2" caption="Recent" href="https://app.powerbi.com/recentlyviewed" existing="false" showinnewtab="true"/>
+						<powerbilink id="SalesReport" caption="Sales report powerbilink">
+							<powerbireportembedlink>https://app.powerbi.com/reportEmbed?reportId=8bf3b8d1-af9b-4a1b-828a-819b2ee13258&amp;autoAuth=true&amp;ctid=88a15be7-1abe-4bed-a8d0-e3521bcb4cfe</powerbireportembedlink>
+							<pagetitle>Sales report</pagetitle>
+							<functionpoint>Account</functionpoint>
+							<mandatorylegislation>Netherlands</mandatorylegislation>
+						</powerbilink>
+					</subsection>
+				</section>
+				<section id="MenuGoogleSheets" caption="Google Sheets" existing="false">
+					<subsection id="MenuDashboardSubsection2" caption="Google Sheets" existing="false">
+						<link id="MenuDashboardLink2" caption="Google Sheets direct link" href="https://docs.google.com/spreadsheets/d/1muzMUbOZDqxXcNeRSAyxNO5Aa24Ws2VRDjrdot_Vhh0/edit?rm=minimal#gid=1876098486" existing="false" showinnewtab="true"/>
+						<googlesheetslink id="DemoGoogleSheetsLink" caption="Google Sheets Embed example">
+							<googlesheetsembedlink>https://docs.google.com/spreadsheets/d/1muzMUbOZDqxXcNeRSAyxNO5Aa24Ws2VRDjrdot_Vhh0/edit?rm=minimal#gid=1876098486</googlesheetsembedlink>
+							<pagetitle>
+								Google Sheets Embed page Examples
+							</pagetitle>
+							<functionpoint>
+								Account
+							</functionpoint>
+						</googlesheetslink>
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+	<!-- Same for quick menu -->
+	<quickmenuextensions>
+		<quickmenuextension menuid="Accounting">
+			<subsection id="MenuLocalization" caption="Extension demo" existing="false">
+				<link id="MenuPrivateUse" caption="Extension Demo -  BE - Private use" href="FinPrivateUse.aspx" existing="false">
+					<mandatorylegislation>
+						Belgium
+					</mandatorylegislation>
+					<functionpoint>
+						VATReturn
+					</functionpoint>
+				</link>
+				<link id="MenuMollie" caption="Mollie" href="https://www.mollie.com/en" existing="false" showinnewtab="true"/>
+			</subsection>
+		</quickmenuextension>
+	</quickmenuextensions>
+	<!--
+	In applicationextensions, you can add your Extension fields, add buttons, add monitor
+	items, etc.
+	-->
+	<applicationextensions>
+		<applicationextension application="CRMAccountCard.aspx">
+			<!--
+			Extension of the card pages is implemented by the business component.
+			Normally card pages do not use business components (but queries).
+			-->
+			<!--
+			Add	a button
+			-->
+			<button caption="DemoExt Mollie" id="ExtDemoMollieCard" href="http://mollie.com/en" showinnewtab="true" existing="false">
+				<documentation>
+					Link to Mollie
+				</documentation>
+			</button>
+			<!--
+			You	can also control the position of your custom button (or other custom control)
+			-->
+			<button caption="DemoExt Internal Button" id="NewInternalButton" href="CRMAccounts.aspx" existing="false" positionbefore="DeduplicationButton"/>
+
+			<!--
+			The link of the Power BI page to render. Make sure the link you paste in is encoded: all occurrences of & should be replaced with &amp;
+			-->
+			<powerbibutton caption="Sales Report" id="ExtDemoSalesReport" showinnewtab="false" existing="false">
+				<powerbireportembedlink>https://app.powerbi.com/reportEmbed?reportId=372ea8c3-7145-4263-b7bb-9f5cd872a548&amp;autoAuth=true&amp;ctid=7338bb75-293c-4938-8f82-11e0cf71db10</powerbireportembedlink>
+				<pagetitle>Sales report</pagetitle>
+			</powerbibutton>
+			<!--
+			Add	a monitor item
+			-->
+			<monitor id="QuickActionsMonitor" existing="true">
+				<documentation>
+					Customize monitor
+				</documentation>
+				<monitoritem id="Monitor" caption="DemoExt internal link" href="CRMAccounts.aspx" image="icon-customer-30.png" existing="false"/>
+				<monitoritem id="ExternalLink" caption="Demo ext external link" href="https://www.yahoo.com" showinnewtab="true" image="icon-competitor-30.png" existing="false"/>
+			</monitor>
+			<cardsection id="AccountInfoSection" existing="true">
+				<field id="MollieUrl" type="hyperlink" href="https://www.mollie.com/en" showinnewtab="true">
+					<documentation>
+						Link to Mollie
+					</documentation>
+				</field>
+			</cardsection>
+			<!--
+			You	can add fields in a new or existing contentsectionrow
+			-->
+			<contentsectionrow id="AccountSectionRow" existing="true">
+				<field id="CocNumberCardField" existing="true" caption="Chamber of Commerce (DemoExt caption changed)"/>
+				<field datafield="ESOFT_ExtDemoLoyaltyMember" />
+				<!--
+				Showfields conditionally with visible expression.
+				In these expressions you can use BC properties, division settings, all standard functions,
+				and in the near future also your own azure Extension functions
+				-->
+				<field datafield="ESOFT_ExtDemoLoyaltyCard" >
+					<visibleexpression>DivisionSetting('ESOFT_ExtDemoLoyaltyCardField', true)</visibleexpression>
+					<documentation>
+						Loyalty card number
+					</documentation>
+				</field>
+				<field datafield="ESOFT_ExtDemoLoyaltyDiscount">
+					<visibleexpression>DivisionSetting('ESOFT_ExtDemoLoyaltyCardField', true)</visibleexpression>
+				</field>
+				<field datafield="ESOFT_ExtDemoLoyaltyLevel" controltype="radiobuttonlist" />
+				<field datafield="ESOFT_ExtDemoLoyaltyRemarks" />
+				<field datafield="ESOFT_ExtDemoContact" />
+				<field datafield="ESOFT_ExtDemoSalesOrder_SalesOrderNumber" />
+			</contentsectionrow>
+		</applicationextension>
+		<applicationextension application="CRMAccount.aspx">
+			<!--
+			Example of an extended maintenance page.
+			Extensibility of maintenance pages is supported via the business component.
+			-->
+			<cardsection id="csGeneral" existing="true">
+				<field datafield="ESOFT_ExtDemoContact"/>
+				<field datafield="ESOFT_ExtDemoSalesOrder_SalesOrderNumber"/>
+			</cardsection>
+			<cardsection id="csLoyalty" caption="Loyalty Section" positionbefore="csContact1" existing="false">
+				<field datafield="ESOFT_ExtDemoLoyaltyCard" >
+					<visibleexpression>DivisionSetting('ESOFT_ExtDemoLoyaltyCardField', true)</visibleexpression>
+				</field>
+				<field datafield="ESOFT_ExtDemoLoyaltyDiscount"/>
+				<field datafield="ESOFT_ExtDemoLoyaltyMember" />
+				<field datafield="ESOFT_ExtDemoLoyaltyLevel" />
+				<field datafield="ESOFT_ExtDemoLoyaltyRemarks"/>
+				<field datafield="ESOFT_ExtDemoSalesOrder"/>
+			</cardsection>
+		</applicationextension>
+		<!-- Example of an extended overview page. -->
+		<applicationextension application="CRMAccounts.aspx">
+			<!--
+			Add	filterblocks or reuse existing filterblocks
+			-->
+			<filterblock>
+				<filter id="sfLoyaltyLevel" controltype="checkboxlist"/>
+				<filter id="sfLoyaltyCardNumber" />
+				<filter id="sfContact" />
+			</filterblock>
+			<!--
+			Add	column groups or reuse existing column groups
+			-->
+			<columngroup id="cgGeneral" existing="true">
+				<join extensiontable="ESOFT_ExtDemo_Accounts"/>
+				<column field="LoyaltyCard" filterid="sfLoyaltyCardNumber"/>
+				<column field="LoyaltyDiscount" filterid="sfLoyaltyDiscount" />
+				<column field="LoyaltyLevel" filterid="sfLoyaltyLevel" >
+					<documentation>
+						List of loyalty levels
+					</documentation>
+				</column>
+				<column field="LoyaltyRemarks" />
+				<column field="Contact" filterid="sfContact" />
+			</columngroup>
+		</applicationextension>
+		<!--
+		In	grid entry pages, it is possible to extend the header and the lines
+		-->
+		<applicationextension application="SlsEntrySalesInvoice.aspx">
+			<!--
+			Example	of adding an Extension button. Here in the dynamic URL i.e. href, uses business component properties (PaymentCondition in below example) in the expression.
+			-->
+			<button caption="Sales Payment Condition" id="SlsEntrySalesInvoice_EntryPage" href="FinPaymentCondition.aspx?Code={PaymentCondition}" showinnewtab="true" existing="false">
+				<documentation>Dynamic Url example referring to property</documentation>
+			</button>
+			<!--
+			Example	of adding an Extension to gridpageheader
+			-->
+			<gridpageheader>
+				<section id="sfsHeader" existing="true">
+					<!-- datasource is optional attribute -->
+					<field datafield="ESOFT_ExtDemoExtraDescription" />
+				</section>
+			</gridpageheader>
+			<!--
+			Example	of adding an Extension column to the grid
+			-->
+			<gridcolumn datafield="ESOFT_ExtDemoColor"/>
+			<gridcolumn datafield="ESOFT_ExtDemoLoyaltyRemarks"/>
+			<!-- New Gridcolumn with type="guid" -->
+			<gridcolumn datafield="ESOFT_ExtDemoSupplier" showreference="true" positionbefore="colItem"/>
+			<gridcolumn datafield="ESOFT_ExtDemoSupplier_City" positionbefore="colItem"/>
+		</applicationextension>
+		<!-- Example of using custom fields for the filters and columns -->
+		<applicationextension application="LogItems.aspx">
+			<filterblock>
+				<filter id="sfAccount" />
+			</filterblock>
+			<columngroup id="cgGeneral" existing="true">
+				<join extensiontable="ESOFT_ExtDemo_Items"/>
+				<column field="Account" filterid="sfAccount" />
+			</columngroup>
+		</applicationextension>
+
+		<applicationextension application="LogItem.aspx">
+			<cardsection id="csGeneral" existing="true">
+				<field datafield="ESOFT_ExtDemoAccount"/>
+			</cardsection>
+		</applicationextension>
+
+		<applicationextension application="LogItemCard.aspx">
+			<contentsectionrow id="ContentSectionRow1" existing="true">
+				<field datafield="ESOFT_ExtDemoAccount"/>
+			</contentsectionrow>
+		</applicationextension>
+		<!-- Example of using forcolumn attribute -->
+		<applicationextension application="InvSerialBatchNumbers.aspx">
+			<filterblock>
+				<filter id="sfAccount"/>
+			</filterblock>
+			<columngroup id="cgGeneral" existing="true">
+				<!--The columns in the columngroupref are Extension columns for the Item table. We know that because column dItem refers to the Items table-->
+				<join forcolumn="dItem" extensiontable="ESOFT_ExtDemo_Items"/>
+				<column field="Account" filterid="sfAccount" />
+			</columngroup>
+		</applicationextension>
+	</applicationextensions>
+	<!--
+	It	is possible to add your own company settings
+	-->
+	<companysettingsextensions>
+		<tab id="ExtDemoDivSettings" caption="Extension Demo" existing="false">
+			<section id="ExtDemoGeneral" caption="ExtDemo Loyalty program" existing="false">
+				<setting id="ESOFT_ExtDemoLoyaltyCardField" caption="Use Loyalty card" type="boolean" defaultvalue="true"/>
+			</section>
+		</tab>
+	</companysettingsextensions>
+	<!--
+	It is possible to define translations of your own strings
+	-->
+	<translationextensions>
+		<translation id="ESOFT_ExtDemoGoldTranslated">
+			<language code="en">
+				Gold
+			</language>
+			<language code="nl">
+				Goud
+			</language>
+		</translation>
+		<translation id="ESOFT_ExtDemoPlatinumTranslated">
+			<language code="en">
+				Platinum
+			</language>
+			<language code="nl">
+				Platina
+			</language>
+		</translation>
+	</translationextensions>
+</extension>

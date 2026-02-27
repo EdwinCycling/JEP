@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension code="ESOFT_DynamicURLs" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../Extensions.xsd">
+    <entities>
+        <entity name="Account" table="Accounts" extensiontable="ESOFT_DynamicURLs_Accounts" businesscomponent="Account">
+            <property name="ESOFT_DynamicURLs_RelatedAccount" columnname="RelatedAccount" caption="Related Account" type="guid" refersto="Account" />
+        </entity>
+    </entities>
+
+    <applicationextensions>
+        <applicationextension application="CRMAccount.aspx">
+            <cardsection id="csGeneral" existing="true">
+                <field datafield="ESOFT_DynamicURLs_RelatedAccount"/>
+            </cardsection>
+        </applicationextension>
+
+        <applicationextension application="CRMAccounts.aspx">
+            <filterblock>
+                <filter id="sfRelatedAccount"/>
+            </filterblock>
+            <columngroup id="cgGeneral" existing="true">
+                <join extensiontable="ESOFT_DynamicURLs_Accounts" />
+                <column filterid="sfRelatedAccount" field="RelatedAccount" />
+            </columngroup>
+        </applicationextension>
+
+        <applicationextension application="CRMAccountCard.aspx">
+            <monitor id="QuickActionsMonitor" existing="true">
+                <!-- 
+                    Linking to overview pages: Pre-filled text search.
+                    Parameter name: "Text"
+                    This parameter is not easily found by exploring the UI, however it is used in most overview pages. The parameter is always just called "Text".
+                -->
+                <monitoritem id="miAccountsSearch" existing="false" caption="Accounts Overview, pre-filled 'Text/Search'" href="CRMAccounts.aspx?Text={Name}"/>
+
+                <!-- 
+                    Linking to a standard entity: Overview page, with pre-filled standard filter.
+                    Parameter name: "Contact"
+                    How to find: In the overview page, hover over the filter you want to pre-fill. In this case, that will show the filter ID "critContact".
+                    The rule of thumb is that there is usually a prefix, followed by the name of the property. This property name is what you use in the URL.
+                -->
+                <monitoritem id="miAccountsStandard" existing="false" caption="Accounts Overview, pre-filled 'Main contact person'" href="CRMAccounts.aspx?Contact={Name}"/>
+
+                <!--
+                    Linking to a standard entity: Overview page, with pre-filled extensibility filter.
+                    Parameter name: "ESOFT_DynamicURLs_sfRelatedAccount"
+                    How to find: Similarly to standard fields/filters, hover over the filter you want to pre-fill in the overview page. In this case, that will show the filter ID "fbESOFT_DynamicURLs_sfRelatedAccount".
+                    These will always start with "fb" followed by the name of the filter. So simply strip the "fb" prefix and you have the parameter name to use in the URL.
+
+                    Alternatively, instead of hovering you can simply combine the extension code with the filter name you defined in the application extension for the overview page. (See line 18)
+                -->
+                <monitoritem id="miAccountsExtensibility" existing="false" caption="Accounts Overview, pre-filled 'Related Account'" href="CRMAccounts.aspx?ESOFT_DynamicURLs_sfRelatedAccount={ID}"/>
+
+                <!--
+                    Linking to a standard entity: Maintenance page, with pre-filled standard field.
+                    Parameter name: "Name"
+                    How to find: In the maintenance page, hover over the field you want to pre-fill. In this case, that will show the field ID "cfName".
+                    The rule of thumb is that there is usually a prefix (Most likely "cf"), followed by the name of the property. This property name is what you use in the URL.
+                -->
+                <monitoritem id="miAccountStandard" existing="false" caption="Account Maintenance, pre-filled 'Name'" href="CRMAccount.aspx?BCAction=0&amp;Name={Name}"/>
+
+                <!--
+                    Linking to a standard entity: Maintenance page, with pre-filled extensibility field.
+                    Parameter name: "ESOFT_DynamicURLs_fRelatedAccount"
+                    How to find: Similarly to standard fields/filters, hover over the field you want to pre-fill in the maintenance page. In this case, that will show the field ID "cfESOFT_DynamicURLs_fRelatedAccount".
+                    These will always start with "cf" followed by the name of the field. So simply strip the "cf" prefix and you have the parameter name to use in the URL.
+
+                    Alternatively, instead of hovering you can simply combine the extension code with the field name you defined in the application extension for the maintenance page. (See line 12)
+                -->
+                <monitoritem id="miAccountExtensibility" existing="false" caption="Account Maintenance, pre-filled 'Related Account'" href="CRMAccount.aspx?BCAction=0&amp;ESOFT_DynamicURLs_fRelatedAccount={ID}"/>
+            </monitor>
+        </applicationextension>
+    </applicationextensions>
+</extension>

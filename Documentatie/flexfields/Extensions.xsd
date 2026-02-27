@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:redefine schemaLocation="ExtensionsBase.xsd">
+		<xs:complexType name="extensiontype">
+			<xs:complexContent>
+				<xs:extension base="extensiontype">
+					<xs:all>
+						<xs:element name="azurefunctions" type="azurefunctionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="customentities" type="customentitiestype" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="workflowdefinitions" type="workflowdefinitionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="roles" type="rolesType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="entities" type="entitiestype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="businesscomponentextensions" type="businesscomponentextensionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="megamenuextensions" type="megamenuextensionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="quickmenuextensions" type="quickmenuextensionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="applicationextensions" type="applicationextensionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="companysettingsextensions" type="companysettingsextensionstype" minOccurs="0" maxOccurs="1" />
+						<xs:element name="translationextensions" type="translationextensionstype" minOccurs="0" maxOccurs="1" />
+					</xs:all>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+		<xs:complexType name="propertytype">
+			<xs:complexContent>
+				<xs:extension base="propertytype">
+					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+
+		<xs:complexType name="applicationextensiontype">
+			<xs:complexContent>
+				<xs:extension base="applicationextensiontype">
+					<!--application is now optional: you should define either application OR entity + pagetype-->
+					<xs:attribute name="application" type="applicationtype" use="optional" />
+					<xs:attribute name="entity" type="nowhitespacestringtype" use="optional" />
+					<xs:attribute name="pagetype" type="pagetypetype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+
+		<xs:complexType name="fieldtype">
+			<xs:complexContent>
+				<xs:extension base="fieldtype">
+					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+
+		<xs:complexType name="gridpageheaderfieldtype">
+			<xs:complexContent>
+				<xs:extension base="gridpageheaderfieldtype">
+					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+
+		<xs:complexType name="filtertype">
+			<xs:complexContent>
+				<xs:extension base="filtertype">
+					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+
+		<xs:complexType name="columntype">
+			<xs:complexContent>
+				<xs:extension base="columntype">
+					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
+					<xs:attribute name="url" type="hreftype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+
+		<xs:complexType name="gridcolumntype">
+			<xs:complexContent>
+				<xs:extension base="gridcolumntype">
+					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:redefine>
+</xs:schema>

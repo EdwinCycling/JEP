@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension code="ESOFT_PF" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Extensions.xsd">
+	<workflowdefinitions>
+		<!--Address change Workflow-->
+		<workflowdefinition name="ESOFT_PF_AddressChange" description="Address change" descriptionplural="Address changes">
+			<customentity>
+				<!--The account of the address change-->
+				<property caption="Account" name="Account" type="guid" refersto="Account"/>
+				<!--We define Reason as the description property: the description property is shown in the My Workflow overview-->
+				<property caption="Reason for the address change" name="Description" type="string" length="255" allowempty="false" isdescription="true"/>
+				<!--The address change properties-->
+				<property caption="City" name="City" type="string" length="60" />
+				<property caption="Postcode" name="Postcode" type="string" length="60" />
+				<property caption="Address" name="AddressLine1" type="string" length="60" />
+
+				<!--The remarks for the Workflow-->
+				<property caption="Workflow remarks" name="WorkflowRemarks" type="string" length="1000" allowempty="true" />
+			</customentity>
+			<stages>
+				<!--The New stage is the first stage of the Workflow, before it has been submitted.
+					It is not mandatory to define the New stage explicitly.
+				-->
+				<stage name="New" caption="New" stagetype="New">
+					<!--In each stage, you can define which properties are mandatory, visible and enabled.
+							If properties are missing in the propertysettings, then the default property settings apply:
+							visible="true", enabled="true", mandatory="false".
+							This holds e.g. for the PostCode and WorkflowRemarks properties.
+						-->
+					<propertysettings>
+						<propertysetting property="Description" mandatory="true" visible="true" enabled="true"/>
+						<propertysetting property="Account" mandatory="true" visible="true" enabled="true"/>
+						<propertysetting property="City" mandatory="true" visible="true" enabled="true"/>
+						<propertysetting property="AddressLine1" mandatory="true" visible="true" enabled="true"/>
+					</propertysettings>
+					<!--In the Actions you define to which stage you can go from this stage.
+						In the Workflow page each action is shown as a button.
+					-->
+					<actions>
+						<!--We define the Create action as the action to submit the address change-->
+						<action caption="Create" name="Create" tostage="Requested">
+							<!--For each action you can define permissions.-->
+							<permissions>
+								<user involvementtype="Creator"/>
+							</permissions>
+						</action>
+					</actions>
+				</stage>
+				<stage caption="Requested" name="Requested">
+					<!--In the requested stage, we disable all properties, except for the Workflow comments
+						In this stage either the Account Manager or the AccountManagers team can approve or reject the address change.
+						They do need to have the View accounts permission in this case.
+						They cannot edit the address change.
+					-->
+					<propertysettings>
+						<propertysetting property="Description" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Account" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="City" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Postcode" mandatory="false" visible="true" enabled="false"/>
+						<propertysetting property="AddressLine1" mandatory="true" visible="true" enabled="false"/>
+					</propertysettings>
+					<actions>
+						<action caption="Approve" name="Approve" tostage="Approved">
+							<permissions>
+								<!--The Account Manager of the account or the AccountManagers team can approve-->
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+							</permissions>
+						</action>
+						<action caption="Reject" name="RequestedReject" tostage="Rejected">
+							<permissions>
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+							</permissions>
+						</action>
+						<action caption="Cancel" name="RequestedCancel" tostage="Canceled">
+							<permissions>
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+							</permissions>
+						</action>
+					</actions>
+					<!-- 
+						When editpermission is not specified, it means that only users who have one of the roles defined in the roles section 
+						with update permission have permission to edit in this stage and that no other involvements are applied.
+						
+						When deletepermissions is not specified, it means that only users who have one of the roles defined in the roles section 
+						with delete permission have permission to delete in this stage and that no other involvements are applied.
+					-->
+				</stage>
+				<stage caption="Approved" name="Approved" defaultaction="Validate">
+					<propertysettings>
+						<propertysetting property="Description" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Account" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="City" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Postcode" mandatory="false" visible="true" enabled="false"/>
+						<propertysetting property="AddressLine1" mandatory="true" visible="true" enabled="false"/>
+					</propertysettings>
+					<actions>
+						<action caption="Validate" name="Validate" tostage="Validated">
+							<permissions>
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+								<!--Users with a general right or a division-specific right to this exising role can perform this action-->
+								<!--The existing role's ID must be a valid standard EOL role ID. the 'Name' attribute is optional-->
+								<existingrole id="112" name="Manage accounts"/>
+							</permissions>
+						</action>
+						<action caption="Reject" name="ApprovedReject" tostage="Rejected">
+							<permissions>
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<!--In the editpermissions you define who can edit the properties in this stage-->
+						<user involvementtype="AccountManager" property="Account"/>
+						<team code="AccountManagers"/>
+						<!--Users with a general right or a division-specific right to this exising role can edit this Workflow at this stage-->
+						<existingrole id="112"/>
+					</editpermissions>
+					<deletepermissions>
+						<!--Users with a general right or a division-specific right to this exising role can delete this Workflow instance-->
+						<existingrole id="112"/>
+					</deletepermissions>
+				</stage>
+				<stage caption="Validated" name="Validated" defaultaction="Process">
+					<propertysettings>
+						<propertysetting property="Description" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Account" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="City" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Postcode" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="AddressLine1" mandatory="true" visible="true" enabled="false"/>
+					</propertysettings>
+					<actions>
+						<action name="Process" caption="Process" tostage="Processed" triggerdescription="When an address change is processed">
+							<permissions>
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+							</permissions>
+							<!--In the automations you define the actions that are executed when the action is triggered.
+								Automations are also visible in the Automate pages, which are accessible from the masterdata menu.
+								Here we update the account with the new address.
+							-->
+							<automations>
+								<automation description="Automation for Processing">
+									<automationaction type="Update" businesscomponent="Account" description="UpdateAccount">
+										<properties>
+											<!--The name attribute refers to the property name 
+												of the business component of the automationaction.
+												The valueexpression attribute refers in general to the property name 
+												of the Workflow custom entity, but it can also be a constant value or a real expression
+											-->
+											<property name="ID" valueexpression="Account"/>
+											<property name="City" valueexpression="City"/>
+											<property name="PostCode" valueexpression="Postcode"/>
+											<property name="AddressLine1" valueexpression="AddressLine1"/>
+										</properties>
+									</automationaction>
+								</automation>
+							</automations>
+						</action>
+						<action caption="Reject" name="ValidatedReject" tostage="Rejected">
+							<permissions>
+								<user involvementtype="AccountManager" property="Account"/>
+								<team code="AccountManagers"/>
+							</permissions>
+						</action>
+					</actions>
+					<!--
+						No one can edit or delete in this stage as denyall="true" and no other permission is assigned. 
+					-->
+					<editpermissions denyall="true"/>
+					<deletepermissions denyall="true"/>
+				</stage>
+				<stage caption="Processed" name="Processed"/>
+				<!--The stage with stagetype="Restarted" is a special stage. 
+					It is meant to restart the whole Workflow. 
+					It can have only an action that goes back to the first stage after "New".
+				-->
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action caption="Resubmit" name="Resubmit" tostage="Requested">
+							<permissions>
+								<user involvementtype="Creator"/>
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator"/>
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator"/>
+					</deletepermissions>
+				</stage>
+				<!--The stage with stagetype="Canceled" is another special stage. 
+					It is meant to cancel the whole Workflow. 
+					The difference with "Restarted" is that it from the Canceled stage, 
+					the Workflow cannot be restarted.
+				-->
+				<stage name="Canceled" caption="Canceled" stagetype="Canceled">
+					<editpermissions denyall="true"/>
+					<deletepermissions>
+						<user involvementtype="Creator"/>
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+	</workflowdefinitions>
+	<roles>
+		<!--In the roles section, you can define who has which permissions for the Workflow (custom entity)
+			In this case, we give users with roles View accounts, Validate accounts or Manage accounts all permissions.
+			Without these permissions, you cannot do anything with the Workflow, even not view it.
+			If you want to give all users permissions, then you can use role id="100" (All users).
+		-->
+		<existingrole id="110" caption="View accounts">
+			<customentity name="ESOFT_PF_AddressChange" permission="Full"/>
+		</existingrole>
+		<existingrole id="111" caption="Validate accounts">
+			<customentity name="ESOFT_PF_AddressChange" permission="Full"/>
+		</existingrole>
+		<existingrole id="112" caption="Manage accounts">
+			<customentity name="ESOFT_PF_AddressChange" permission="Full"/>
+		</existingrole>
+	</roles>
+	<entities>
+		<entity name="Account" table="Accounts" extensiontable="ESOFT_PF_AddressChange_Accounts" businesscomponent="Account">
+			<!-- Reference to the ESOFT_PF_AddressChange Workflow instance -->
+			<property name="ESOFT_PFAddressChange" columnname="AddressChange" caption="Address change Workflow" type="guid" referstocustomentity="ESOFT_PF_AddressChange"/>
+		</entity>
+	</entities>
+	<!--We define a menu extension with an "Overview address changes" and a "New address change" menu entry-->
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<tab id="tWorkflows" caption="Address changes" existing="false">
+				<section id="sWorkflows" caption="Workflows" existing="false">
+					<subsection id="ssWorkflows" caption="Workflows" existing="false">
+						<link id="ListAddressChanges" caption="Overview: Address changes" existing="false" showinnewtab="false" href="ExtWorkflows.aspx?Entity=ESOFT_PF_AddressChange" />
+						<link id="NewAddressChange" caption="New address change" existing="false" showinnewtab="false" href="ExtWorkflow.aspx?Entity=ESOFT_PF_AddressChange&amp;BCAction=0" />
+						<link id="Pivot" caption="Address changes pivot reports" existing="false" href="ExtWorkflowPivots.aspx?Entity=ESOFT_PF_AddressChange" />
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+	<applicationextensions>
+		<!--We define a button "Address change" in the account card to start the address change Workflow, 
+			with the account properties prefilled
+			We also define a field "Address change" in the account card to show the address change Workflow instance.
+		-->
+		<applicationextension application="CRMAccountCard.aspx">
+			<button id="AddressChange" caption="Address change" existing="false" showinnewtab="false" href="ExtWorkflow.aspx?Entity=ESOFT_PF_AddressChange&amp;BCAction=0&amp;Account={ID}&amp;City={City}&amp;Postcode={Postcode}&amp;AddressLine1={AddressLine1}"/>
+			<contentsectionrow id="AccountSectionRow" existing="true">
+				<field id="AddressChange" datafield="ESOFT_PFAddressChange" type="guid" caption="Address change" datasource="bc" readonly="true" existing="false" referstocustomentity="ESOFT_PF_AddressChange"/>
+			</contentsectionrow>
+		</applicationextension>
+		<!--We define a field "Address change" in the account maintainance page to refer Workflow instance for the current account.
+		-->
+		<applicationextension application="CRMAccount.aspx">
+			<cardsection id="csGeneral" existing="true">
+				<field id="AddressChange" datafield="ESOFT_PFAddressChange" type="guid" caption="Address change Workflow" datasource="bc" existing="false" referstocustomentity="ESOFT_PF_AddressChange"/>
+			</cardsection>
+		</applicationextension>
+		<applicationextension pagetype="Maintenance" entity="ESOFT_PF_AddressChange">
+			<!--You can define your own sections, and add fields to these sections instead of the default csGeneral section.
+				Fields are added to the default csGeneral section if they are not defined in any section of the applicationextension
+			-->
+			<cardsection id="csAddress" existing="false" caption="Address">
+				<field id="Address" datafield="AddressLine1" type="string" caption="AddressLine1" datasource="bc" existing="false"/>
+				<field id="Postcode" datafield="Postcode" type="string" caption="Postcode" datasource="bc" existing="false"/>
+				<field id="City" datafield="City" type="string" caption="City" datasource="bc" existing="false"/>
+			</cardsection>
+			<cardsection id="csRemarks" existing="false" caption="Remarks">
+				<field id="Remark" datafield="WorkflowRemarks" type="string" caption="Workflow remarks" datasource="bc" existing="false" controltype="textarea"/>
+			</cardsection>
+		</applicationextension>
+	</applicationextensions>
+</extension>

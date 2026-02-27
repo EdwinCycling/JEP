@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This declaration request extension defines a Workflow with multiple approvers-->
+<extension code="ESOFT_DECL" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Extensions.xsd">
+	<workflowdefinitions>
+		<workflowdefinition name="ESOFT_DECL_Declaration" description="Declaration request" descriptionplural="Declaration requests">
+			<customentity>
+				<property name="Description" type="string" length="60" caption="Description" allowempty="false" isdescription="true"/>
+				<property name="UserId" type="guid" refersto="User" caption="User" allowempty="false"/>
+				<property name="StartDate" type="date" caption="Date" allowempty="false"/>
+				<property name="Amount" type="double" caption="Amount" allowempty="false"/>
+				<property name="Remarks" type="string" length="1000" caption="Remarks" allowempty="true"/>
+			</customentity>
+			<stages>
+				<stage name="New" caption="New" stagetype="New">
+					<actions>
+						<action name="Created" tostage="Created" caption="Create">
+							<permissions>
+								<!--Both the user and the user's manager can create a declaration request-->
+								<user involvementtype="UserManager" property="UserId"/>
+								<user involvementtype="User" property="UserId"/>
+							</permissions>
+						</action>
+					</actions>
+				</stage>
+				<stage name="Created" caption="Created">
+					<propertysettings>
+						<propertysetting property="Description" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="UserId" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="StartDate" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Amount" mandatory="false" visible="true" enabled="false"/>
+						<propertysetting property="Remarks" mandatory="false" visible="true" enabled="true"/>
+					</propertysettings>
+					<actions>
+						<!--The user's manager can either approve or reject-->
+						<action name="Approve" tostage="ApprovedOnce" caption="Approve">
+							<permissions>
+								<user involvementtype="UserManager" property="UserId"/>
+							</permissions>
+							<skip tostage="ApprovedTwice">
+								<condition>Amount &lt; 20</condition>
+							</skip>
+						</action>
+						<action name="Reject" tostage="Rejected" caption="Reject">
+							<permissions>
+								<user involvementtype="UserManager" property="UserId"/>
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="UserManager" property="UserId"/>
+						<user involvementtype="User" property="UserId"/>
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="UserManager" property="UserId"/>
+						<user involvementtype="User" property="UserId"/>
+					</deletepermissions>
+				</stage>
+				<stage name="ApprovedOnce" caption="Approved once">
+					<propertysettings>
+						<propertysetting property="Description" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="UserId" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="StartDate" mandatory="true" visible="true" enabled="false"/>
+						<propertysetting property="Amount" mandatory="false" visible="true" enabled="false"/>
+						<propertysetting property="Remarks" mandatory="false" visible="true" enabled="true"/>
+					</propertysettings>
+					<actions>
+						<action name="ApproveTwice" tostage="ApprovedTwice" caption="Confirm approval">
+							<permissions>
+								<!--With the actor element we can refer back to a user who executed a previous action.
+									In this example, this "ApproveTwice" action can be executed 
+									by the manager of the user, who executed the "Approve" ation.
+								-->
+								<actor involvementtype="UserManager" action="Approve"/>
+							</permissions>
+						</action>
+						<action name="Reject2" tostage="Rejected" caption="Reject">
+							<permissions>
+								<actor involvementtype="UserManager" action="Approve"/>
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<actor involvementtype="UserManager" action="Approve"/>
+					</editpermissions>
+				</stage>
+				<stage name="ApprovedTwice" caption="Approved twice"/>
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action name="Resubmit" tostage="Created" caption="Resubmit">
+							<permissions>
+								<user involvementtype="Creator"/>
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator"/>
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator"/>
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+	</workflowdefinitions>
+	<roles>
+		<existingrole id="100" caption="Default Role">
+			<customentity name="ESOFT_DECL_Declaration" permission="Full"/>
+		</existingrole>
+	</roles>
+	<businesscomponentextensions>
+		<businesscomponent name="ESOFT_DECL_Declaration">
+			<!--The UserId and StartDate properties are defaulted to the current user and today's date respectively.-->
+			<functionalcomponent type="ExpressionDefault" targetproperty="UserId" propertyStates="AfterAddNew">
+				<expression>CurrentUserId</expression>
+			</functionalcomponent>
+			<functionalcomponent type="ExpressionDefault" targetproperty="StartDate" propertyStates="AfterAddNew">
+				<expression>Today</expression>
+			</functionalcomponent>
+		</businesscomponent>
+	</businesscomponentextensions>
+	<!--You can find the menu for this Workflow in the "Leave and Absence" section of the "Employees" menu-->
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<tab id="Employees" existing="true">
+				<section id="LeaveAndAbsence" existing="true">
+					<subsection id="Declaration" caption="Declaration" existing="false">
+						<link existing="false" id="DeclarationRequest" caption="New Declaration Request" href="ExtWorkflow.aspx?Entity=ESOFT_DECL_Declaration&amp;BCAction=0&amp;"/>
+						<link existing="false" id="DeclarationRequests" caption="Declaration Requests" href="ExtWorkflows.aspx?Entity=ESOFT_DECL_Declaration"/>
+						<link existing="false" id="Pivot" caption="Declaration pivot reports" href="ExtWorkflowPivots.aspx?Entity=ESOFT_DECL_Declaration" />
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+</extension>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" code="ESOFT_SASI" version="1.0.0" xsi:noNamespaceSchemaLocation="Extensions.xsd">
+	<workflowdefinitions>
+		<!--
+			The first Workflow is to generate a Sales Order with max. 2 lines:
+			Properties:
+			- Description (of order header)
+			- Customer
+			- Quantity + Item for line 1
+			- Quantity + Item for line 2
+			Actions:
+			- Create
+			- Process
+				- Creates the order with an automation
+				
+			Remarks:
+			- It is not necessary to create the order header explicitly. The header is created automatically when the first line is created (and updated when the second line is created)
+			- The EntryID is generated from the ID of the Workflow. 
+			  This is a to guarantee that both order lines get the same EntryID
+			- It is not necessary to specify the Journal, GLAccount and VATCode for the order lines explicitly.
+				The default values are set when the order is created.
+			- The description of the order is only taken over if the order has exactly one line.
+		-->
+		<workflowdefinition name="ESOFT_SASI_Order" description="Item order generation" descriptionplural="Items order generation">
+			<customentity>
+				<property caption="ID" name="HID" type="integer" autoincrement="true" iscode="true" unique="true" allowempty="false" />
+				<property caption="Description" name="Description" type="string" length="60" allowempty="false" isdescription="true" />
+				<property caption="Customer" name="Account" type="guid" refersto="Account" allowempty="false" />
+				<property caption="Quantity1" name="Quantity1" type="integer" />
+				<property caption="Item1" name="Item1" type="guid" refersto="Item" allowempty="false" />
+				<property caption="Quantity2" name="Quantity2" type="integer" allowempty="true" />
+				<property caption="Item2" name="Item2" type="guid" refersto="Item" allowempty="true" />
+			</customentity>
+			<stages>
+				<stage name="Created" caption="Created" captionid="2468">
+					<actions>
+						<action name="Process" tostage="Processed" caption="Process" triggerdescription="When an order is processed">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+							<automations>
+								<automation description="Create Order">
+									<automationaction type="Create" businesscomponent="SalesOrderLine" description="Create first Order line">
+										<properties>
+											<property name="DescriptionHeader" valueexpression="Description" />
+											<property name="OrderAccount" valueexpression="Account" />
+											<property name="LineNumber" literalvalue="1" />
+											<!--EntryID of the Order is equal to the ID of the Workflow record-->
+											<property name="EntryID" valueexpression="ID" />
+											<property name="QuantityDisplay" valueexpression="Quantity1" />
+											<property name="Item" valueexpression="Item1" />
+										</properties>
+									</automationaction>
+									<automationaction type="Create" businesscomponent="SalesOrderLine" description="Create second Order line">
+										<enabledexpression>NOT (Item2 = null)</enabledexpression>
+										<properties>
+											<property name="DescriptionHeader" valueexpression="Description" />
+											<property name="OrderAccount" valueexpression="Account" />
+											<property name="LineNumber" literalvalue="2" />
+											<property name="EntryID" valueexpression="ID" />
+											<property name="QuantityDisplay" valueexpression="Quantity2" />
+											<property name="Item" valueexpression="Item2" />
+										</properties>
+									</automationaction>
+								</automation>
+							</automations>
+						</action>
+						<action name="CreatedReject" tostage="Rejected" caption="Reject" captionid="360">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+				<stage name="Processed" caption="Processed" />
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action name="Resubmit" tostage="Created" caption="Resubmit">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="Canceled" caption="Canceled" stagetype="Canceled">
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+		<!--
+		The second Workflow to generate a Sales Invoice with max. 2 lines:
+		Properties:
+		- Description (of invoice header)
+		- Customer
+		- Journal
+		- Quantity + Item for line 1
+		- Quantity + Item for line 2
+		Actions:
+		- Create
+		- Process
+			- Creates the invoice with an automation
+			
+		Remarks:
+		- It is not necessary to create the invoice header. The header is created automatically when the first line is created (and updated when the second line is created)
+		- The EntryID is generated from the ID of the Workflow. 
+		  This is a to guarantee that both invoice lines get the same EntryID
+		- It is necessary to specify the Journal for the invoice lines explicitly, this needs to be the code of the journal that you wish to use for the invoice.
+		- The description of the invoice is only taken over if the invoice has exactly one line.
+	-->
+		<workflowdefinition name="ESOFT_SASI_Invoice" description="Item invoice generation" descriptionplural="Items invoice generation">
+			<customentity>
+				<property caption="ID" name="HID" type="integer" autoincrement="true" iscode="true" unique="true" allowempty="false" />
+				<property caption="Description" name="Description" type="string" length="60" allowempty="false" isdescription="true" />
+				<property caption="Customer" name="Account" type="guid" refersto="Account" allowempty="false" />
+				<property caption="Journal code" name="Journal" type="integer" allowempty="false" />
+				<property caption="Quantity1" name="Quantity1" type="integer" />
+				<property caption="Item1" name="Item1" type="guid" refersto="Item" allowempty="false" />
+				<property caption="Quantity2" name="Quantity2" type="integer" allowempty="true" />
+				<property caption="Item2" name="Item2" type="guid" refersto="Item" allowempty="true" />
+			</customentity>
+			<stages>
+				<stage name="Created" caption="Created" captionid="2468">
+					<actions>
+						<action name="Process" tostage="Processed" caption="Process" triggerdescription="When an invoice is processed">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+							<automations>
+								<automation description="Create invoice">
+									<automationaction type="Create" businesscomponent="SalesInvoiceLine" description="Create first invoice line">
+										<properties>
+											<property name="Description" valueexpression="Description" />
+											<property name="DescriptionHeader" valueexpression="Description" />
+											<property name="Journal" valueexpression="Journal" />
+											<property name="OrderAccount" valueexpression="Account" />
+											<property name="LineNumber" literalvalue="1" />
+											<property name="EntryID" valueexpression="ID" />
+											<property name="QuantityDisplay" valueexpression="Quantity1" />
+											<property name="Item" valueexpression="Item1" />
+										</properties>
+									</automationaction>
+									<automationaction type="Create" businesscomponent="SalesInvoiceLine" description="Create second invoice line">
+										<enabledexpression>NOT (Item2 = null)</enabledexpression>
+										<properties>
+											<property name="Journal" literalvalue="70" />
+											<property name="OrderAccount" valueexpression="Account" />
+											<property name="LineNumber" literalvalue="2" />
+											<property name="EntryID" valueexpression="ID" />
+											<property name="QuantityDisplay" valueexpression="Quantity2" />
+											<property name="Item" valueexpression="Item2" />
+										</properties>
+									</automationaction>
+								</automation>
+							</automations>
+						</action>
+						<action name="CreatedReject" tostage="Rejected" caption="Reject" captionid="360">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+				<stage name="Processed" caption="Processed" />
+				<stage name="Rejected" caption="Rejected" stagetype="Restarted">
+					<actions>
+						<action name="Resubmit" tostage="Created" caption="Resubmit">
+							<permissions>
+								<user involvementtype="Creator" />
+							</permissions>
+						</action>
+					</actions>
+					<editpermissions>
+						<user involvementtype="Creator" />
+					</editpermissions>
+				</stage>
+				<stage name="Canceled" caption="Canceled" stagetype="Canceled">
+					<deletepermissions>
+						<user involvementtype="Creator" />
+					</deletepermissions>
+				</stage>
+			</stages>
+		</workflowdefinition>
+	</workflowdefinitions>
+	<businesscomponentextensions>
+		<businesscomponent name="ESOFT_SASI_Order">
+			<functionalcomponent type="ExpressionDefault" targetproperty="Quantity1" propertyStates="AfterAddNew BeforeInsert">
+				<expression>1</expression>
+			</functionalcomponent>
+		</businesscomponent>
+		<businesscomponent name="ESOFT_SASI_Invoice">
+			<functionalcomponent type="ExpressionDefault" targetproperty="Quantity1" propertyStates="AfterAddNew BeforeInsert">
+				<expression>1</expression>
+			</functionalcomponent>
+		</businesscomponent>
+	</businesscomponentextensions>
+	<roles>
+		<existingrole id="100" caption="Default role">
+			<customentity name="ESOFT_SASI_Order" permission="Full" />
+			<customentity name="ESOFT_SASI_Invoice" permission="Full" />
+		</existingrole>
+	</roles>
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<tab id="OrderGeneration" existing="false" caption="Order generation">
+				<section id="OrderGeneration" existing="false" caption="Order generation">
+					<subsection id="OrderGeneration" existing="false" caption="Order generation">
+						<link id="Overview" caption="Overview generated Orders" existing="false" href="ExtWorkflows.aspx?Entity=ESOFT_SASI_Order" />
+						<link id="New" caption="New generated Order" existing="false" href="ExtWorkflow.aspx?Entity=ESOFT_SASI_Order&amp;BCAction=0" />
+						<link id="Pivot" caption="Generated Orders pivot" existing="false" href="ExtWorkflowPivots.aspx?Entity=ESOFT_SASI_Order" />
+					</subsection>
+					<subsection id="InvoiceGeneration" existing="false" caption="Invoice generation">
+						<link id="Overview" caption="Overview generated invoices" existing="false" href="ExtWorkflows.aspx?Entity=ESOFT_SASI_Invoice" />
+						<link id="New" caption="New generated invoice" existing="false" href="ExtWorkflow.aspx?Entity=ESOFT_SASI_Invoice&amp;BCAction=0" />
+						<link id="Pivot" caption="Generated Invoices pivot" existing="false" href="ExtWorkflowPivots.aspx?Entity=ESOFT_SASI_Invoice" />
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+</extension>

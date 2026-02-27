@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension code="ESOFT_DynamicURLCustomEntity" version="1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../ExtensionsCustomEntity.xsd">
+	<customentities>
+		<customentity name="ESOFT_DynamicURLCustomEntity_DemoKit" table="ESOFT_DynamicURLCustomEntity_DemoKits" description="Demo Kit" descriptionplural="Demo Kits">
+			<property name="Code" caption="Code" type="integer" autoincrement="true" iscode="true" unique="true" allowempty="false" />
+			<property name="Name" caption="Name" type="string" length="150" isdescription="true" allowempty="false" />
+			<property name="Status" caption="Status" type="integer" allowempty="false">
+				<listitems listdefinitionid="DemoKitStatusList" allowempty="false">
+					<listitem value="1" caption="Requested" />
+					<listitem value="2" caption="Sent" />
+					<listitem value="3" caption="Returned" />
+					<listitem value="4" caption="Malfunctioning" />
+					<listitem value="5" caption="In Use" />
+				</listitems>
+			</property>
+			<property name="RequestedBy" caption="Requested By" type="guid" refersto="Account" allowempty="false" />
+			<property name="RequestedAt" caption="Requested At" type="date" allowempty="false" />
+			<property name="Remarks" caption="Remarks" type="string" length="4000" allowempty="true"/>
+			<property name="ReturnedAt" caption="Returned At" type="date" allowempty="true" />
+			<property name="ReturnCondition" caption="Return Condition" type="integer" allowempty="true">
+				<listitems listdefinitionid="DemoKitReturnConditionList" allowempty="true">
+					<listitem value="1" caption="Good Condition" />
+					<listitem value="2" caption="Minor Damage" />
+					<listitem value="3" caption="Major Damage" />
+					<listitem value="4" caption="Lost" />
+				</listitems>
+			</property>
+		</customentity>
+	</customentities>
+
+	<entities>
+		<entity name="Account" table="Accounts" extensiontable="ESOFT_DynamicURLCustomEntity_Accounts" businesscomponent="Account">
+			<property name="ESOFT_DynamicURLCustomEntity_PreferredDemoKit" columnname="PreferredDemoKit" caption="Preferred Demo Kit" type="guid" referstocustomentity="ESOFT_DynamicURLCustomEntity_DemoKit" />
+		</entity>
+	</entities>
+
+	<roles>
+		<existingrole id="100" caption="Default role">
+			<customentity name="ESOFT_DynamicURLCustomEntity_DemoKit" permission="Full" />
+		</existingrole>
+	</roles>
+
+	<megamenuextensions>
+		<megamenuextension menuid="MegaMenu">
+			<tab id="tDemoKits" existing="false" caption="Demo Kits">
+				<section id="sDemoKits" existing="false" caption="Demo Kits">
+					<subsection id="ssDemoKits" existing="false" caption="Demo Kits">
+						<!--
+                            To link to the overview page, we link to the `ExtCustomEntities.aspx` page.
+                            We should pass the `name` property of the `customentity` defined above to the `Entity` parameter.
+                        -->
+						<link id="lDemoKitsOverview" existing="false" caption="Overview: Demo Kits" href="ExtCustomEntities.aspx?Entity=ESOFT_DynamicURLCustomEntity_DemoKit" />
+						<!-- 
+                            To link to a maintenance page to create a new item, we link to the `ExtCustomEntity.aspx` page.
+                            We should pass the `name` property of the `customentity` defined above to the `Entity` parameter.
+                            Additionally we pass the `BCAction` parameter with value 0, to create a new item.
+                        -->
+						<link id="lDemoKitsNew" existing="false" caption="Create New Demo Kit" href="ExtCustomEntity.aspx?Entity=ESOFT_DynamicURLCustomEntity_DemoKit&amp;BCAction=0" />
+					</subsection>
+				</section>
+			</tab>
+		</megamenuextension>
+	</megamenuextensions>
+
+	<applicationextensions>
+		<applicationextension application="CRMAccount.aspx">
+			<cardsection id="csGeneral" existing="true">
+				<field datafield="ESOFT_DynamicURLCustomEntity_PreferredDemoKit" referstocustomentity="ESOFT_DynamicURLCustomEntity_DemoKit" />
+			</cardsection>
+		</applicationextension>
+
+		<applicationextension application="CRMAccounts.aspx">
+			<filterblock>
+				<filter id="sfPreferredDemoKit"/>
+			</filterblock>
+			<columngroup id="cgGeneral" existing="true">
+				<join extensiontable="ESOFT_DynamicURLCustomEntity_Accounts" />
+				<column filterid="sfPreferredDemoKit" field="PreferredDemoKit"/>
+			</columngroup>
+		</applicationextension>
+
+		<applicationextension entity="ESOFT_DynamicURLCustomEntity_DemoKit" pagetype="Maintenance">
+			<!-- When testing, make sure Name and Requested By are filled, and that the entity has been saved at least once with these values. -->
+
+			<monitor id="csMonitor" existing="true">
+				<!-- 
+                    Linking to overview pages: Pre-filled text search.
+                    Parameter name: "Text"
+                    This parameter is not easily found by exploring the UI, however it is used in most overview pages. The parameter is always just called "Text".
+                -->
+				<monitoritem id="miAccountsSearch" existing="false" caption="Accounts Overview, pre-filled 'Text/Search'" href="CRMAccounts.aspx?Text={Name}"/>
+
+				<!-- 
+                    Linking to a standard entity: Overview page, with pre-filled standard filter.
+                    Parameter name: "Contact"
+                    How to find: In the overview page, hover over the filter you want to pre-fill. In this case, that will show the filter ID "critContact".
+                    The rule of thumb is that there is usually a prefix, followed by the name of the property. This property name is what you use in the URL.
+                -->
+				<monitoritem id="miAccountsStandard" existing="false" caption="Accounts Overview, pre-filled 'Main contact person'" href="CRMAccounts.aspx?Contact={Name}"/>
+
+				<!--
+                    Linking to a standard entity: Overview page, with pre-filled extensibility filter.
+                    Parameter name: "ESOFT_DynamicURLCustomEntity_sfPreferredDemoKit"
+                    How to find: Similarly to standard fields/filters, hover over the filter you want to pre-fill in the overview page. In this case, that will show the filter ID "fbESOFT_DynamicURLCustomEntity_sfPreferredDemoKit".
+                    These will always start with "fb" followed by the name of the filter. So simply strip the "fb" prefix and you have the parameter name to use in the URL.
+
+                    Alternatively, instead of hovering you can simply combine the Extension code with the filter name you defined in the application Extension for the overview page. (See line 74)
+                -->
+				<monitoritem id="miAccountsExtensibility" existing="false" caption="Accounts Overview, pre-filled 'Preferred Demo Kit'" href="CRMAccounts.aspx?ESOFT_DynamicURLCustomEntity_sfPreferredDemoKit={ID}"/>
+
+				<!--
+                    Linking to a standard entity: Maintenance page, with pre-filled standard field.
+                    Parameter name: "Name"
+                    How to find: In the maintenance page, hover over the field you want to pre-fill. In this case, that will show the field ID "cfName".
+                    The rule of thumb is that there is usually a prefix (Most likely "cf"), followed by the name of the property. This property name is what you use in the URL.
+                -->
+				<monitoritem id="miAccountStandard" existing="false" caption="Account Maintenance, pre-filled 'Name'" href="CRMAccount.aspx?BCAction=0&amp;Name={Name}"/>
+
+				<!--
+                    Linking to a standard entity: Maintenance page, with pre-filled extensibility field.
+                    Parameter name: "ESOFT_DynamicURLCustomEntity_fPreferredDemoKit"
+                    How to find: Similarly to standard fields/filters, hover over the field you want to pre-fill in the maintenance page. In this case, that will show the field ID "cfESOFT_DynamicURLCustomEntity_fPreferredDemoKit".
+                    These will always start with "cf" followed by the name of the field. So simply strip the "cf" prefix and you have the parameter name to use in the URL.
+
+                    Alternatively, instead of hovering you can simply combine the Extension code with the field name you defined in the application Extension for the maintenance page. (See line 68)
+                -->
+				<monitoritem id="miAccountExtensibility" existing="false" caption="Account Maintenance, pre-filled 'Preferred Demo Kit'" href="CRMAccount.aspx?BCAction=0&amp;ESOFT_DynamicURLCustomEntity_fPreferredDemoKit={ID}"/>
+
+				<!-- 
+                    Linking to a custom entity: Overview page, with pre-filled filter.
+                    Parameter name: "ESOFT_DynamicURLCustomEntity_RequestedBy"
+                    How to find: In the overview page, hover over the filter you want to pre-fill. In this case, it shows the filter ID "fbESOFT_DynamicURLCustomEntity_RequestedBy".
+                    These will always start with "fb" followed by the name of the filter. So simply strip the "fb" prefix and you have the parameter name to use in the URL.
+
+                    Alternatively, instead of hovering you can simply combine the Extension code with the property name you defined in the custom entity. (See line 16)
+                -->
+				<monitoritem id="miDemoKits" existing="false" caption="Demo Kits Overview, pre-filled 'Requested By'" href="ExtCustomEntities.aspx?Entity=ESOFT_DynamicURLCustomEntity_DemoKit&amp;ESOFT_DynamicURLCustomEntity_RequestedBy={RequestedBy}"/>
+
+				<!-- 
+                    Linking to a custom entity: Maintenance page, with pre-filled field.
+                    Parameter name: "RequestedBy"
+                    How to find: In the maintenance page, hover over the field you want to pre-fill. In this case, it shows the field ID "cfESOFT_DynamicURLCustomEntity_RequestedBy".
+                    These will always start with "cf" followed by the Extension code, and the name of the property. So simply strip the prefix and the Extension code, and you have the parameter name to use in the URL.
+
+                    Alternatively, instead of hovering you can simply use the property name you defined in the custom entity. (See line 16)
+                -->
+				<monitoritem id="miDemoKit" existing="false" caption="Demo Kit Maintenance, pre-filled 'Requested By'" href="ExtCustomEntity.aspx?Entity=ESOFT_DynamicURLCustomEntity_DemoKit&amp;BCAction=0&amp;RequestedBy={RequestedBy}"/>
+			</monitor>
+		</applicationextension>
+	</applicationextensions>
+</extension>
