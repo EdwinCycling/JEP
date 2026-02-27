@@ -16,7 +16,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useJEPStore } from '../store';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { 
   Flag, 
   RotateCcw, 
@@ -35,7 +35,7 @@ import {
   EyeOff,
   Unlock
 } from 'lucide-react';
-import { JEPWorkflowDefinition, JEPWorkflowStage, JEPWorkflowAction, JEPProperty, JEPPropertySetting } from '../types';
+import { JEPWorkflowDefinition, JEPWorkflowStage, JEPWorkflowAction, JEPProperty, JEPWorkflowPropertySetting } from '../types';
 
 // Custom Node for Workflow Stages
 const StageNode = ({ data, selected }: { data: { stage: JEPWorkflowStage, isSimulating?: boolean, isCurrent?: boolean }; selected: boolean }) => {
@@ -322,7 +322,7 @@ export default function WorkflowDesigner() {
       }
 
       // Toggle the value
-      const attr = `@_${type}` as keyof JEPPropertySetting;
+      const attr = `@_${type}` as keyof JEPWorkflowPropertySetting;
       const currentValue = setting[attr];
       
       if (type === 'mandatory') {
