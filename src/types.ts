@@ -1,3 +1,7 @@
+export interface JEPFeaturesets {
+  featureset?: string | string[];
+}
+
 export interface JEPProperty {
   "@_name": string;
   "@_type": string;
@@ -11,6 +15,11 @@ export interface JEPProperty {
   "@_refersto"?: string;
   "@_referstocustomentity"?: string;
   "@_translationid"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
   listitems?: {
     "@_allowempty"?: string;
     "@_listdefinitionid"?: string;
@@ -31,6 +40,10 @@ export interface JEPEntity {
   "@_descriptionplural"?: string;
   "@_translationid"?: string;
   "@_translationpluralid"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
   property?: JEPProperty[];
 }
 
@@ -59,18 +72,33 @@ export interface JEPCardSection {
   "@_existing"?: string;
   "@_caption"?: string;
   "@_positionbefore"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
   field?: JEPField[];
 }
 
 export interface JEPContentSectionRow {
   "@_id": string;
   "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
   field?: JEPField[];
 }
 
 export interface JEPGridPageHeaderSection {
   "@_id": string;
   "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
   field?: JEPField[];
 }
 
@@ -91,6 +119,11 @@ export interface JEPGridColumn {
   "@_positionbefore"?: string;
   "@_existing"?: string;
   "@_showreference"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
 }
 
 export interface JEPFilter {
@@ -103,6 +136,11 @@ export interface JEPFilter {
   "@_existing"?: string;
   "@_controltype"?: string;
   "@_listdefinitionid"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
 }
 
 export interface JEPFilterBlock {
@@ -122,6 +160,11 @@ export interface JEPColumnGroupColumn {
   "@_existing"?: string;
   "@_controltype"?: string;
   "@_listdefinitionid"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  visibleexpression?: string;
   documentation?: string;
 }
 
@@ -135,10 +178,6 @@ export interface JEPColumnGroup {
   column?: JEPColumnGroupColumn[];
 }
 
-export interface JEPFeaturesets {
-  featureset?: string | string[];
-}
-
 export interface JEPButton {
   "@_id": string;
   "@_caption"?: string;
@@ -149,6 +188,7 @@ export interface JEPButton {
   mandatorylegislation?: string;
   mandatoryfeaturesets?: JEPFeaturesets;
   forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
 }
 
 export interface JEPMonitorItem {
@@ -159,6 +199,7 @@ export interface JEPMonitorItem {
   mandatorylegislation?: string;
   mandatoryfeaturesets?: JEPFeaturesets;
   forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
 }
 
 export interface JEPMonitor {
@@ -194,19 +235,92 @@ export interface JEPTranslation {
   language?: JEPTranslationLanguage[];
 }
 
-export interface JEPMegaMenuExtension {
+export interface JEPMegaMenuLink {
   "@_id": string;
-  "@_parentid"?: string;
-  "@_positionbefore"?: string;
   "@_caption"?: string;
+  "@_captionid"?: string;
   "@_translationid"?: string;
-  "@_url"?: string;
-  "@_target"?: string;
+  "@_href"?: string;
+  "@_existing"?: string;
   "@_featurecheck"?: 'All' | 'Any' | 'None';
   mandatorylegislation?: string;
   mandatoryfeaturesets?: JEPFeaturesets;
   forbiddenfeaturesets?: JEPFeaturesets;
-  item?: JEPMegaMenuExtension[];
+  visibleexpression?: string;
+}
+
+export interface JEPMegaMenuSubsection {
+  "@_id": string;
+  "@_caption"?: string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
+  link?: JEPMegaMenuLink | JEPMegaMenuLink[];
+}
+
+export interface JEPMegaMenuSection {
+  "@_id": string;
+  "@_caption"?: string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
+  subsection?: JEPMegaMenuSubsection | JEPMegaMenuSubsection[];
+}
+
+export interface JEPMegaMenuTab {
+  "@_id": string;
+  "@_caption"?: string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
+  section?: JEPMegaMenuSection | JEPMegaMenuSection[];
+}
+
+export interface JEPMegaMenuExtension {
+  "@_menuid": string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  tab?: JEPMegaMenuTab | JEPMegaMenuTab[];
+}
+
+export interface JEPQuickMenuSubsection {
+  "@_id": string;
+  "@_caption"?: string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
+  link?: JEPMegaMenuLink | JEPMegaMenuLink[];
+}
+
+export interface JEPQuickMenuExtension {
+  "@_menuid": string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  subsection?: JEPQuickMenuSubsection | JEPQuickMenuSubsection[];
 }
 
 export interface JEPRoleCustomEntity {
@@ -236,6 +350,9 @@ export interface JEPModel {
     megamenuextensions?: {
       megamenuextension?: JEPMegaMenuExtension[];
     };
+    quickmenuextensions?: {
+      quickmenuextension?: JEPQuickMenuExtension[];
+    };
     roles?: JEPRoles;
     applicationextensions?: {
       applicationextension?: JEPApplicationExtension[];
@@ -243,7 +360,6 @@ export interface JEPModel {
     translationextensions?: {
       translation?: JEPTranslation[];
     };
-    // Other root elements like quickmenuextensions, etc.
     [key: string]: any;
   };
 }
