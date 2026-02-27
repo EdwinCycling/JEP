@@ -20,7 +20,7 @@ export function createApiApp() {
 
   // Request logging
   app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Original: ${req.originalUrl} - Path: ${req.path}`);
     next();
   });
 
