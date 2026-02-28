@@ -348,6 +348,83 @@ export default function Dashboard() {
         yPos = (doc as any).lastAutoTable.finalY + 15;
       }
 
+      // 5. Feature Sets Section
+      const featuresets = model.extension?.mandatoryfeaturesets?.featureset || [];
+      const featureList = Array.isArray(featuresets) ? featuresets : [featuresets].filter(Boolean);
+      
+      if (featureList.length > 0) {
+        if (yPos > 240) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text("5. Vereiste Feature Sets", 14, yPos);
+        yPos += 8;
+        doc.setFontSize(9);
+        featureList.forEach(fs => {
+          doc.text(`- ${fs}`, 18, yPos);
+          yPos += 6;
+        });
+        yPos += 10;
+      }
+
+      // 6. Power BI Reports Section
+      const powerbiLinks: any[] = [];
+      
+      // Check Mega Menu
+      const megaMenuExts = model.extension?.megamenuextensions?.megamenuextension;
+      const allMega = Array.isArray(megaMenuExts) ? megaMenuExts : [megaMenuExts].filter(Boolean);
+      allMega.forEach(menu => {
+        const tabs = Array.isArray(menu.tab) ? menu.tab : [menu.tab].filter(Boolean);
+        tabs.forEach(tab => {
+          const sections = Array.isArray(tab.section) ? tab.section : [tab.section].filter(Boolean);
+          sections.forEach(sec => {
+            const subsections = Array.isArray(sec.subsection) ? sec.subsection : [sec.subsection].filter(Boolean);
+            subsections.forEach(sub => {
+              if (sub.powerbilink) {
+                const links = Array.isArray(sub.powerbilink) ? sub.powerbilink : [sub.powerbilink];
+                links.forEach(l => powerbiLinks.push({ ...l, type: 'Mega Menu' }));
+              }
+            });
+          });
+        });
+      });
+
+      // Check Quick Menu
+      const quickMenuExts = model.extension?.quickmenuextensions?.quickmenuextension;
+      const allQuick = Array.isArray(quickMenuExts) ? quickMenuExts : [quickMenuExts].filter(Boolean);
+      allQuick.forEach(menu => {
+        const subsections = Array.isArray(menu.subsection) ? menu.subsection : [menu.subsection].filter(Boolean);
+        subsections.forEach(sub => {
+          if (sub.powerbilink) {
+            const links = Array.isArray(sub.powerbilink) ? sub.powerbilink : [sub.powerbilink];
+            links.forEach(l => powerbiLinks.push({ ...l, type: 'Quick Menu' }));
+          }
+        });
+      });
+
+      if (powerbiLinks.length > 0) {
+        if (yPos > 240) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text("6. Power BI Rapporten", 14, yPos);
+        yPos += 8;
+        
+        const pbiData = powerbiLinks.map(l => [
+          l["@_caption"] || "Naamloos",
+          l.type,
+          l.pagetitle || "-",
+          l.powerbireportembedlink || "-"
+        ]);
+
+        autoTable(doc, {
+          startY: yPos,
+          head: [['Naam', 'Type', 'Pagina Titel', 'Embed URL']],
+          body: pbiData,
+          theme: 'striped',
+          headStyles: { fillColor: [241, 196, 15] },
+          styles: { fontSize: 8, cellPadding: 3 },
+          columnStyles: { 3: { cellWidth: 60 } }
+        });
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+
       // --- PAGE 2: Graphical Views ---
       doc.addPage();
       doc.setFontSize(18);

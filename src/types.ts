@@ -328,6 +328,7 @@ export interface JEPQuickMenuSubsection {
   forbiddenfeaturesets?: JEPFeaturesets;
   visibleexpression?: string;
   link?: JEPMegaMenuLink | JEPMegaMenuLink[];
+  powerbilink?: JEPPowerBILink | JEPPowerBILink[];
 }
 
 export interface JEPQuickMenuExtension {

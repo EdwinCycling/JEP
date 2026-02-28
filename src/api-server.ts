@@ -81,6 +81,7 @@ export function createApiApp() {
             "extension.quickmenuextensions.quickmenuextension.forbiddenfeaturesets.featureset",
             "extension.quickmenuextensions.quickmenuextension.subsection",
             "extension.quickmenuextensions.quickmenuextension.subsection.link",
+            "extension.quickmenuextensions.quickmenuextension.subsection.powerbilink",
             "extension.megamenuextensions.megamenuextension",
             "extension.megamenuextensions.megamenuextension.mandatoryfeaturesets.featureset",
             "extension.megamenuextensions.megamenuextension.forbiddenfeaturesets.featureset",
