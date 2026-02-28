@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useJEPStore } from '../store';
-import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, Link as LinkIcon, Folder, LayoutGrid, Menu as MenuIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, Link as LinkIcon, Folder, LayoutGrid, Menu as MenuIcon, Info } from 'lucide-react';
 import MenuEditModal from './MenuEditModal';
 
 export default function MenuEditor() {
@@ -332,6 +332,22 @@ export default function MenuEditor() {
                 );
               })
             )}
+          </div>
+
+          <div className="p-4 mt-auto">
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+              <div className="flex items-start space-x-4">
+                <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                  <Info className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-bold text-blue-900 text-sm">Menu Structuren</h4>
+                  <p className="text-blue-800 text-xs leading-relaxed font-sans">
+                    Het Mega Menu is de hoofdnavigatie bovenin de Aurora interface. Het Quick Menu is het "+" menu rechtsboven voor snelle acties. Gebruik <code className="bg-blue-200 px-1 rounded text-[10px]">showinnewtab="true"</code> voor externe links. De <code className="bg-blue-200 px-1 rounded text-[10px]">ToolTip</code> in Exact Online instellingen kan je helpen om de juiste ID's van bestaande menu-onderdelen te vinden.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

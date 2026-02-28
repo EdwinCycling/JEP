@@ -268,19 +268,16 @@ export default function FeatureSetsEditor() {
         </div>
 
         {/* Technical Documentation Link */}
-        <div className="p-6 bg-gray-900 rounded-2xl text-white">
-          <div className="flex items-center space-x-3 mb-4">
-            <Info className="w-6 h-6 text-exact-purple" />
-            <h3 className="text-lg font-heading font-semibold">Ontwikkelaars Informatie</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm opacity-80 font-sans leading-relaxed">
-            <div>
-              <p className="font-bold text-white mb-2">Mandatory Legislation</p>
-              <p>Beperkt de extensie tot specifieke landversies van Exact Online. Als de huidige administratie niet voldoet aan deze wetgeving, zal de extensie niet geladen worden.</p>
+        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-start space-x-4">
+            <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+              <Info className="w-5 h-5 text-blue-600" />
             </div>
-            <div>
-              <p className="font-bold text-white mb-2">Feature Sets</p>
-              <p>Feature sets komen overeen met specifieke modules of licentie-niveaus. Je kunt hiermee functionaliteit aan- of uitzetten op basis van wat de klant heeft aangeschaft.</p>
+            <div className="space-y-2">
+              <h4 className="font-bold text-blue-900 text-sm tracking-tight">Feature Set Beveiliging</h4>
+              <p className="text-blue-800 text-xs leading-relaxed font-sans opacity-90">
+                Feature sets bepalen welke gebruikers toegang hebben tot specifieke onderdelen van je extensie. Je kunt UI-elementen verbergen als een gebruiker niet over de juiste licentie beschikt (<code className="bg-blue-200 px-1 rounded text-[10px]">mandatoryfeaturesets</code>) of juist als ze een bepaalde feature wel hebben (<code className="bg-blue-200 px-1 rounded text-[10px]">forbiddenfeaturesets</code>).
+              </p>
             </div>
           </div>
         </div>

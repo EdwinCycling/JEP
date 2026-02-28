@@ -195,6 +195,22 @@ export default function PageCanvas() {
               </div>
             )}
           </div>
+
+          <div className="p-4 mt-auto">
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+              <div className="flex items-start space-x-3">
+                <div className="p-1.5 bg-blue-100 rounded-lg shrink-0">
+                  <Info className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-blue-900 text-xs tracking-tight">Pagina Aanpassingen</h4>
+                  <p className="text-blue-800 text-[10px] leading-relaxed font-sans opacity-90">
+                    Application Extensions maken het mogelijk om standaard Aurora pagina's (.aspx) aan te passen. Je kunt knoppen toevoegen aan de actiebalk, nieuwe secties toevoegen aan kaarten of extra kolommen toevoegen aan overzichten (grids). Gebruik <code className="bg-blue-200 px-1 rounded text-[10px]">existing="true"</code> om naar bestaande elementen te verwijzen.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main Content: Visual Canvas */}

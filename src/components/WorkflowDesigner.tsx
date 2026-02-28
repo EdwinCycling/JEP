@@ -873,6 +873,22 @@ function WorkflowDesignerInternal() {
                   </button>
                 </div>
               </div>
+
+              <div className="pt-4 mt-auto">
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
+                  <div className="flex items-start space-x-4">
+                    <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                      <Info className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-blue-900 text-sm tracking-tight">Bedrijfsprocessen</h4>
+                      <p className="text-blue-800 text-xs leading-relaxed font-sans opacity-90">
+                        Workflows in Exact Online Premium zijn gebaseerd op Custom Entities. Voor elke workflow-definitie worden automatisch standaardpagina's gegenereerd voor invoer, overzicht en beheer. Een workflow bestaat uit verschillende fasen (stages) die de status van het proces bepalen.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

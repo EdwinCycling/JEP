@@ -35,7 +35,8 @@ import {
   PlusCircle,
   Link as LinkIcon,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Info
 } from 'lucide-react';
 import CustomEntityModal from './CustomEntityModal';
 import EditorModal from './EditorModal';
@@ -380,6 +381,22 @@ function SchemaDesignerInternal() {
                 </div>
               );
             })}
+          </div>
+
+          <div className="p-4 mt-4">
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+              <div className="flex items-start space-x-3">
+                <div className="p-1.5 bg-blue-100 rounded-lg shrink-0">
+                  <Info className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="space-y-1.5">
+                  <h4 className="font-bold text-blue-900 text-xs tracking-tight">Database Uitbreidingen</h4>
+                  <p className="text-blue-800 text-[10px] leading-relaxed font-sans opacity-90">
+                    Met Exact Online Premium kun je bestaande tabellen uitbreiden of volledig nieuwe 'Custom Entities' aanmaken. Elke nieuwe tabel krijgt automatisch een division-kolom en unieke ID's. Let op: namen van nieuwe eigenschappen moeten altijd beginnen met je eigen developer-prefix.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
