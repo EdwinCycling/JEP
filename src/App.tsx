@@ -121,85 +121,86 @@ export default function App() {
             </a>
           </div>
 
-          <div className="flex items-center z-10">
+          <div className="flex items-center z-10 relative">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 text-gray-500 hover:text-exact-dark hover:bg-gray-100 rounded-lg transition-colors"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
+
+            {/* Dropdown Menu */}
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute top-full mt-2 right-0 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
+                >
+                  <button
+                    onClick={() => {
+                      if (model) {
+                        setConfirmAction('exit');
+                      } else {
+                        setShowLanding(true);
+                      }
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 mr-3 text-exact-red" />
+                    Afsluiten
+                  </button>
+                  {model && (
+                    <button
+                      onClick={() => {
+                        setConfirmAction('new');
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
+                    >
+                      <FilePlus className="w-4 h-4 mr-3 text-exact-blue" />
+                      Nieuw Bestand
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsManagingXsd(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
+                  >
+                    <FileCode className="w-4 h-4 mr-3 text-exact-blue" />
+                    Update XSD
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsPricingOpen(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
+                  >
+                    <CreditCard className="w-4 h-4 mr-3 text-exact-gold" />
+                    Pricing
+                  </button>
+                  <div className="h-px bg-gray-100 my-1"></div>
+                  <button
+                    onClick={() => {
+                      setInfoModalType('team');
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
+                  >
+                    <Info className="w-4 h-4 mr-3 text-exact-purple" />
+                    About
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-        
-        {/* Dropdown Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-20 right-4 sm:right-6 lg:right-8 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
-            >
-              <button
-                onClick={() => {
-                  if (model) {
-                    setConfirmAction('exit');
-                  } else {
-                    setShowLanding(true);
-                  }
-                  setIsMenuOpen(false);
-                }}
-                className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
-              >
-                <LogOut className="w-4 h-4 mr-3 text-exact-red" />
-                Afsluiten
-              </button>
-              {model && (
-                <button
-                  onClick={() => {
-                    setConfirmAction('new');
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
-                >
-                  <FilePlus className="w-4 h-4 mr-3 text-exact-blue" />
-                  Nieuw Bestand
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  setIsManagingXsd(true);
-                  setIsMenuOpen(false);
-                }}
-                className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
-              >
-                <FileCode className="w-4 h-4 mr-3 text-exact-blue" />
-                Update XSD
-              </button>
-              <button
-                onClick={() => {
-                  setIsPricingOpen(true);
-                  setIsMenuOpen(false);
-                }}
-                className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
-              >
-                <CreditCard className="w-4 h-4 mr-3 text-exact-gold" />
-                Pricing
-              </button>
-              <div className="h-px bg-gray-100 my-1"></div>
-              <button
-                onClick={() => {
-                  setInfoModalType('team');
-                  setIsMenuOpen(false);
-                }}
-                className="w-full text-left px-4 py-2.5 text-sm font-medium text-exact-dark hover:bg-gray-50 flex items-center transition-colors"
-              >
-                <Info className="w-4 h-4 mr-3 text-exact-purple" />
-                About
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      </header>
 
         {/* Decorative Bar */}
         <div className="h-1.5 w-full flex">
