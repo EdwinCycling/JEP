@@ -17,7 +17,11 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
   // Basic Info
   const [name, setName] = useState("");
   const [caption, setCaption] = useState("");
+  const [translationId, setTranslationId] = useState("");
   const [type, setType] = useState("string");
+
+  const translationsList = model?.extension?.translationextensions?.translation || [];
+  const translationIds = (Array.isArray(translationsList) ? translationsList : [translationsList]).map((t: any) => t["@_id"]).filter(Boolean);
   
   // Advanced Settings
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -52,6 +56,7 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
     if (existingField) {
       setName(existingField["@_columnname"] || existingField["@_name"].replace(`${extCode}_`, "") || "");
       setCaption(existingField["@_caption"] || "");
+      setTranslationId(existingField["@_translationid"] || "");
       setType(existingField["@_type"] || "string");
       
       setAllowEmpty(existingField["@_allowempty"] !== "false");
@@ -168,7 +173,7 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
     setIsSaving(true);
     try {
       const prefixedName = name.startsWith(extCode + "_") ? name : `${extCode}_${name}`;
-      const translationId = `${extCode}_${name}_Translation`;
+      const finalTranslationId = translationId || `${extCode}_${name}_Translation`;
 
       updateModel((draft) => {
         let entity = draft.extension?.entities?.entity?.find((e) => e["@_name"] === entityName);
@@ -184,7 +189,7 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
             "@_caption": caption,
             "@_type": type,
             "@_columnname": name.replace(`${extCode}_`, ""),
-            "@_translationid": translationId,
+            "@_translationid": finalTranslationId,
             "@_allowempty": allowEmpty ? "true" : "false",
             "@_readonly": readOnly ? "true" : "false",
           };
@@ -254,7 +259,7 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
               "@_datafield": prefixedName,
               "@_type": type,
               "@_caption": caption,
-              "@_translationid": translationId,
+              "@_translationid": finalTranslationId,
             };
 
             if (appExt.cardsection) {
@@ -292,9 +297,9 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
             ? draft.extension.translationextensions.translation 
             : [draft.extension.translationextensions.translation].filter(Boolean);
           
-          const transIdx = translations.findIndex((t: any) => t["@_id"] === (existingField?.["@_translationid"] || translationId));
+          const transIdx = translations.findIndex((t: any) => t["@_id"] === (existingField?.["@_translationid"] || finalTranslationId));
           const transData = {
-            "@_id": translationId,
+            "@_id": finalTranslationId,
             language: [
               { "@_code": "nl", "#text": caption },
               { "@_code": "en", "#text": caption },
@@ -379,6 +384,31 @@ export default function EditorModal({ entityName, isCustomEntity, existingField,
                     placeholder="bijv. Kleur of Klantnummer"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-exact-blue outline-none transition-shadow font-sans"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-exact-dark mb-1.5 font-sans">
+                    Vertaling (Translation ID)
+                  </label>
+                  <div className="space-y-2">
+                    <select
+                      value={translationId}
+                      onChange={(e) => setTranslationId(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-exact-blue outline-none transition-shadow font-sans bg-white text-sm"
+                    >
+                      <option value="">-- Kies een bestaande vertaling --</option>
+                      {translationIds.map((tid: string) => (
+                        <option key={tid} value={tid}>{tid}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      value={translationId}
+                      onChange={(e) => setTranslationId(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg italic text-gray-500 outline-none"
+                      placeholder="Of voer een nieuw Translation ID in..."
+                    />
+                  </div>
                 </div>
 
                 <div>

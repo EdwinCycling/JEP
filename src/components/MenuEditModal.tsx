@@ -22,6 +22,11 @@ export default function MenuEditModal({ type, initialData, onSave, onClose }: Me
   const [mandatoryFeaturesets, setMandatoryFeaturesets] = useState('');
   const [forbiddenFeaturesets, setForbiddenFeaturesets] = useState('');
   const [featureCheck, setFeatureCheck] = useState<'All' | 'Any' | 'None'>('None');
+  const [translationId, setTranslationId] = useState('');
+
+  const { model } = useJEPStore();
+  const translations = model?.extension?.translationextensions?.translation || [];
+  const translationIds = (Array.isArray(translations) ? translations : [translations]).map(t => t["@_id"]).filter(Boolean);
 
   useEffect(() => {
     if (initialData) {
@@ -31,6 +36,7 @@ export default function MenuEditModal({ type, initialData, onSave, onClose }: Me
       setShowInNewTab(initialData['@_showinnewtab'] === 'true' || initialData['@_showinnewtab'] === true);
       setExisting(initialData['@_existing'] === 'true' || initialData['@_existing'] === true);
       setMenuId(initialData['@_menuid'] || '');
+      setTranslationId(initialData['@_translationid'] || '');
       
       setMandatoryLegislation(initialData.mandatorylegislation || '');
       
@@ -54,6 +60,9 @@ export default function MenuEditModal({ type, initialData, onSave, onClose }: Me
     } else {
       data['@_id'] = id;
       data['@_caption'] = caption;
+      if (translationId) {
+        data['@_translationid'] = translationId;
+      }
     }
 
     if (type === 'link') {
@@ -143,6 +152,30 @@ export default function MenuEditModal({ type, initialData, onSave, onClose }: Me
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-exact-blue"
                     placeholder="Weergavenaam in het menu"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Vertaling (Translation ID)</label>
+                  <div className="relative">
+                    <select
+                      value={translationId}
+                      onChange={(e) => setTranslationId(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-exact-blue bg-white"
+                    >
+                      <option value="">-- Geen vertaling --</option>
+                      {translationIds.map(tid => (
+                        <option key={tid} value={tid}>{tid}</option>
+                      ))}
+                    </select>
+                    <div className="mt-1 flex items-center space-x-2">
+                      <input 
+                        type="text"
+                        value={translationId}
+                        onChange={(e) => setTranslationId(e.target.value)}
+                        placeholder="Of voer handmatig ID in..."
+                        className="flex-1 text-xs px-2 py-1 border border-gray-200 rounded italic text-gray-500"
+                      />
+                    </div>
+                  </div>
                 </div>
               </>
             )}

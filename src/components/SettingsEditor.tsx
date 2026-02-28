@@ -76,10 +76,20 @@ export default function SettingsEditor() {
   };
 
   const handleRemoveTranslation = (transId: string) => {
+    // Check if ID is in use
+    const isUsedInMenus = JSON.stringify(model?.extension?.megamenuextensions).includes(transId) || 
+                         JSON.stringify(model?.extension?.quickmenuextensions).includes(transId);
+    const isUsedInPages = JSON.stringify(model?.extension?.applicationextensions).includes(transId);
+    const isUsedInEntities = JSON.stringify(model?.extension?.entities).includes(transId);
+
+    const usageMessage = (isUsedInMenus || isUsedInPages || isUsedInEntities) 
+      ? `\n\nLET OP: Dit ID lijkt in gebruik te zijn in je menu's of pagina's!` 
+      : "";
+
     showDialog({
       type: 'confirm',
       title: 'Vertaling Verwijderen',
-      message: `Weet je zeker dat je de vertaling '${transId}' wilt verwijderen?`,
+      message: `Weet je zeker dat je de vertaling '${transId}' wilt verwijderen?${usageMessage}`,
       onConfirm: () => {
         updateModel((draft) => {
           const trans = draft.extension.translationextensions?.translation;

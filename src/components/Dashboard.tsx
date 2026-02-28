@@ -426,6 +426,73 @@ export default function Dashboard() {
         yPos = (doc as any).lastAutoTable.finalY + 15;
       }
 
+      // 7. Division Settings Section
+      const divSettingsTabs = model.extension?.divisionsettingsextensions?.tab || [];
+      const divSettingsTabsArray = Array.isArray(divSettingsTabs) ? divSettingsTabs : [divSettingsTabs].filter(Boolean);
+      
+      if (divSettingsTabsArray.length > 0) {
+        if (yPos > 240) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text("7. Division Settings", 14, yPos);
+        yPos += 8;
+        
+        const divData: any[] = [];
+        divSettingsTabsArray.forEach(tab => {
+          const sections = Array.isArray(tab.section) ? tab.section : [tab.section].filter(Boolean);
+          sections.forEach(sec => {
+            const settings = Array.isArray(sec.setting) ? sec.setting : [sec.setting].filter(Boolean);
+            settings.forEach(set => {
+              divData.push([
+                tab["@_caption"],
+                sec["@_caption"],
+                set["@_caption"],
+                set["@_type"],
+                set["@_defaultvalue"] || "-"
+              ]);
+            });
+          });
+        });
+
+        autoTable(doc, {
+          startY: yPos,
+          head: [['Tab', 'Sectie', 'Instelling', 'Type', 'Standaard']],
+          body: divData,
+          theme: 'striped',
+          headStyles: { fillColor: [241, 196, 15] },
+          styles: { fontSize: 8, cellPadding: 3 }
+        });
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+
+      // 8. Vertalingen Section
+      const transExts = model.extension?.translationextensions?.translation || [];
+      const transArray = Array.isArray(transExts) ? transExts : [transExts].filter(Boolean);
+      
+      if (transArray.length > 0) {
+        if (yPos > 240) { doc.addPage(); yPos = 20; }
+        doc.setFontSize(14);
+        doc.text("8. Vertalingen", 14, yPos);
+        yPos += 8;
+        
+        const transData: any[] = [];
+        transArray.forEach(trans => {
+          const languages = Array.isArray(trans.language) ? trans.language : [trans.language].filter(Boolean);
+          const nl = languages.find(l => l["@_code"] === 'nl-NL' || l["@_code"] === 'nl')?.[ "#text"] || "-";
+          const en = languages.find(l => l["@_code"] === 'en-EN' || l["@_code"] === 'en')?.[ "#text"] || "-";
+          transData.push([trans["@_id"], nl, en]);
+        });
+
+        autoTable(doc, {
+          startY: yPos,
+          head: [['Translation ID', 'Nederlands', 'Engels']],
+          body: transData,
+          theme: 'striped',
+          headStyles: { fillColor: [155, 89, 182] },
+          styles: { fontSize: 8, cellPadding: 3 }
+        });
+        yPos = (doc as any).lastAutoTable.finalY + 15;
+      }
+
       // --- PAGE 2: Graphical Views ---
       doc.addPage();
       doc.setFontSize(18);
