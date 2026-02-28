@@ -22,19 +22,36 @@ export default function PowerBIEditor() {
     ? megamenuextensions 
     : [megamenuextensions].filter(Boolean) as JEPMegaMenuExtension[];
 
-  const powerbiLinks: { menuIdx: number, tabIdx: number, sectionIdx: number, subsectionIdx: number, link: JEPPowerBILink, linkIdx: number }[] = [];
+  const powerbiLinks: { 
+    menuIdx: number, 
+    tabIdx: number, 
+    sectionIdx: number, 
+    subsectionIdx: number, 
+    link: JEPPowerBILink, 
+    linkIdx: number,
+    tabId: string 
+  }[] = [];
 
   allMenuExts.forEach((menu, mIdx) => {
     const tabs = Array.isArray(menu.tab) ? menu.tab : [menu.tab].filter(Boolean);
     tabs.forEach((tab: any, tIdx) => {
+      const tabId = tab["@_id"] || "Onbekend";
       const sections = Array.isArray(tab.section) ? tab.section : [tab.section].filter(Boolean);
       sections.forEach((sec: any, sIdx) => {
         const subsections = Array.isArray(sec.subsection) ? sec.subsection : [sec.subsection].filter(Boolean);
         subsections.forEach((sub: any, subIdx) => {
           if (sub.powerbilink) {
-            const links = Array.isArray(sub.powerbilink) ? sub.powerbilink : [sub.powerbilink];
+            const links = Array.isArray(sub.powerbilink) ? sub.powerbilink : [sub.powerbilink].filter(Boolean);
             links.forEach((link, lIdx) => {
-              powerbiLinks.push({ menuIdx: mIdx, tabIdx: tIdx, sectionIdx: sIdx, subsectionIdx: subIdx, link, linkIdx: lIdx });
+              powerbiLinks.push({ 
+                menuIdx: mIdx, 
+                tabIdx: tIdx, 
+                sectionIdx: sIdx, 
+                subsectionIdx: subIdx, 
+                link, 
+                linkIdx: lIdx,
+                tabId
+              });
             });
           }
         });
@@ -119,18 +136,35 @@ export default function PowerBIEditor() {
       message: `Weet je zeker dat je het rapport '${info.link["@_caption"]}' wilt verwijderen?`,
       onConfirm: () => {
         updateModel((draft) => {
-          const menuExts = draft.extension.megamenuextensions.megamenuextension;
-          const allMenus = Array.isArray(menuExts) ? menuExts : [menuExts];
-          const menu = allMenus[info.menuIdx];
+          if (!draft.extension?.megamenuextensions?.megamenuextension) return;
           
-          const allTabs = Array.isArray(menu.tab) ? menu.tab : [menu.tab];
-          const tab = allTabs[info.tabIdx];
+          let menuExts = draft.extension.megamenuextensions.megamenuextension;
+          if (!Array.isArray(menuExts)) {
+            draft.extension.megamenuextensions.megamenuextension = [menuExts];
+            menuExts = draft.extension.megamenuextensions.megamenuextension;
+          }
+          const menu = menuExts[info.menuIdx];
+          
+          let tabs = menu.tab;
+          if (!Array.isArray(tabs)) {
+            menu.tab = [tabs];
+            tabs = menu.tab;
+          }
+          const tab = tabs[info.tabIdx];
 
-          const allSections = Array.isArray(tab.section) ? tab.section : [tab.section];
-          const section = allSections[info.sectionIdx];
+          let sections = tab.section;
+          if (!Array.isArray(sections)) {
+            tab.section = [sections];
+            sections = tab.section;
+          }
+          const section = sections[info.sectionIdx];
 
-          const allSubsections = Array.isArray(section.subsection) ? section.subsection : [section.subsection];
-          const subsection = allSubsections[info.subsectionIdx];
+          let subsections = section.subsection;
+          if (!Array.isArray(subsections)) {
+            section.subsection = [subsections];
+            subsections = section.subsection;
+          }
+          const subsection = subsections[info.subsectionIdx];
 
           if (Array.isArray(subsection.powerbilink)) {
             subsection.powerbilink.splice(info.linkIdx, 1);
@@ -145,25 +179,40 @@ export default function PowerBIEditor() {
 
   const handleUpdateLink = (info: typeof powerbiLinks[0], key: keyof JEPPowerBILink, value: string) => {
     updateModel((draft) => {
-      const menuExts = draft.extension.megamenuextensions.megamenuextension;
-      const allMenus = Array.isArray(menuExts) ? menuExts : [menuExts];
-      const menu = allMenus[info.menuIdx];
+      if (!draft.extension?.megamenuextensions?.megamenuextension) return;
       
-      const allTabs = Array.isArray(menu.tab) ? menu.tab : [menu.tab];
-      const tab = allTabs[info.tabIdx];
-
-      const allSections = Array.isArray(tab.section) ? tab.section : [tab.section];
-      const section = allSections[info.sectionIdx];
-
-      const allSubsections = Array.isArray(section.subsection) ? section.subsection : [section.subsection];
-      const subsection = allSubsections[info.subsectionIdx];
-
-      const links = Array.isArray(subsection.powerbilink) ? subsection.powerbilink : [subsection.powerbilink];
-      (links[info.linkIdx] as any)[key] = value;
-      
-      if (!Array.isArray(subsection.powerbilink)) {
-        subsection.powerbilink = links[0];
+      let menuExts = draft.extension.megamenuextensions.megamenuextension;
+      if (!Array.isArray(menuExts)) {
+        draft.extension.megamenuextensions.megamenuextension = [menuExts];
+        menuExts = draft.extension.megamenuextensions.megamenuextension;
       }
+      const menu = menuExts[info.menuIdx];
+      
+      let tabs = menu.tab;
+      if (!Array.isArray(tabs)) {
+        menu.tab = [tabs];
+        tabs = menu.tab;
+      }
+      const tab = tabs[info.tabIdx];
+
+      let sections = tab.section;
+      if (!Array.isArray(sections)) {
+        tab.section = [sections];
+        sections = tab.section;
+      }
+      const section = sections[info.sectionIdx];
+
+      let subsections = section.subsection;
+      if (!Array.isArray(subsections)) {
+        section.subsection = [subsections];
+        subsections = section.subsection;
+      }
+      const subsection = subsections[info.subsectionIdx];
+
+      if (!Array.isArray(subsection.powerbilink)) {
+        subsection.powerbilink = [subsection.powerbilink];
+      }
+      (subsection.powerbilink[info.linkIdx] as any)[key] = value;
     });
   };
 
@@ -265,7 +314,7 @@ export default function PowerBIEditor() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-[10px] font-bold text-gray-400 uppercase bg-white px-2 py-1 rounded-md border border-gray-200">
-                      ID: {allMenuExts[item.menuIdx].tab[item.tabIdx]["@_id"]}
+                      Tab: {item.tabId}
                     </span>
                   </div>
                 </div>
