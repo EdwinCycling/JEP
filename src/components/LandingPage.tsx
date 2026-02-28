@@ -14,6 +14,8 @@ import {
   X
 } from 'lucide-react';
 
+import { APP_VERSION } from '../config';
+
 interface LandingPageProps {
   onStart: () => void;
 }
@@ -454,8 +456,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             <div className="h-full w-1/3 bg-[#DFA800]"></div>
           </div>
           
-          <div className="mt-8 text-center text-xs text-gray-400">
-            &copy; {new Date().getFullYear()} Jouw Exact Partner. Alle rechten voorbehouden.
+          <div className="mt-8 flex justify-between items-center text-xs text-gray-400">
+            <div>&copy; {new Date().getFullYear()} Jouw Exact Partner. Alle rechten voorbehouden.</div>
+            <div className="font-mono">v{APP_VERSION}</div>
           </div>
         </div>
       </footer>
@@ -489,26 +492,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
       <Modal 
         isOpen={modalType === 'contact'} 
         onClose={() => setModalType(null)} 
-        title="Contact"
+        title="Contact & Ondersteuning"
       >
-        <p>Heeft u vragen of ondersteuning nodig bij uw Exact Online Premium extensies?</p>
-        <div className="space-y-4 mt-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-exact-blue/10 rounded-full flex items-center justify-center">
-              <Zap className="w-5 h-5 text-exact-blue" />
+        <div className="space-y-6">
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 flex items-start space-x-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-200">
+              <ShieldCheck className="w-6 h-6 text-white" />
             </div>
             <div>
-              <div className="font-bold">Support</div>
-              <div className="text-sm text-gray-500">support@jouwexactpartner.nl</div>
+              <h4 className="text-lg font-bold text-blue-900 mb-1">Professionele Ondersteuning</h4>
+              <p className="text-blue-800 text-sm leading-relaxed">
+                Klanten kunnen terecht bij <strong>Exact Partners</strong> voor volledige ondersteuning en begeleiding bij de implementatie van hun Exact Online Premium extensies.
+              </p>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-exact-red/10 rounded-full flex items-center justify-center">
-              <Users className="w-5 h-5 text-exact-red" />
-            </div>
-            <div>
-              <div className="font-bold">Consultancy</div>
-              <div className="text-sm text-gray-500">info@jouwexactpartner.nl</div>
+          
+          <div className="pt-6 border-t border-gray-100">
+            <div className="font-bold">Over de applicatie</div>
+            <div className="text-sm text-gray-500 leading-relaxed">
+              Deze applicatie is ontwikkeld door een gepassioneerd team van experts op het gebied van Exact Online onder leiding van Edwin. Ons doel is om partners te helpen efficiënter en effectiever te werken met Exact Online Premium extensies.
             </div>
           </div>
         </div>

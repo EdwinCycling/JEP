@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { useJEPStore } from '../store';
 import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, Link as LinkIcon, Folder, LayoutGrid, Menu as MenuIcon } from 'lucide-react';
-import ConfirmModal from './ConfirmModal';
 import MenuEditModal from './MenuEditModal';
 
 export default function MenuEditor() {
-  const { model, updateModel, addChangelog, addAddedFieldId } = useJEPStore();
+  const { model, updateModel, addChangelog, addAddedFieldId, showDialog } = useJEPStore();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
-  const [deleteConfirm, setDeleteConfirm] = useState<{ type: string, path: any[], name: string } | null>(null);
   const [editModal, setEditModal] = useState<{ type: 'tab' | 'section' | 'subsection' | 'link' | 'quickmenuextension', path: any[], initialData?: any } | null>(null);
 
   if (!model) return null;
@@ -53,23 +51,26 @@ export default function MenuEditor() {
     return newObj;
   };
 
-  const handleDelete = () => {
-    if (!deleteConfirm) return;
-    const { path, name } = deleteConfirm;
-    
-    updateModel((draft) => {
-      draft.extension = setNestedObject(draft.extension, path, undefined);
-      
-      // Clean up empty arrays if necessary
-      const parentPath = path.slice(0, -1);
-      const parent = getNestedObject(draft.extension, parentPath);
-      if (Array.isArray(parent) && parent.length === 0) {
-        draft.extension = setNestedObject(draft.extension, parentPath, undefined);
+  const handleDelete = (path: any[], name: string) => {
+    showDialog({
+      type: 'confirm',
+      title: 'Item Verwijderen',
+      message: `Weet je zeker dat je '${name}' wilt verwijderen uit het menu?`,
+      onConfirm: () => {
+        updateModel((draft) => {
+          draft.extension = setNestedObject(draft.extension, path, undefined);
+          
+          // Clean up empty arrays if necessary
+          const parentPath = path.slice(0, -1);
+          const parent = getNestedObject(draft.extension, parentPath);
+          if (Array.isArray(parent) && parent.length === 0) {
+            draft.extension = setNestedObject(draft.extension, parentPath, undefined);
+          }
+        });
+        
+        addChangelog(`Menu item '${name}' verwijderd.`);
       }
     });
-    
-    addChangelog(`Menu item '${name}' verwijderd.`);
-    setDeleteConfirm(null);
   };
 
   const handleSave = (data: any) => {
@@ -144,7 +145,7 @@ export default function MenuEditor() {
         </div>
         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button onClick={() => setEditModal({ type: 'link', path: [...path, idx], initialData: l })} className="p-1 text-gray-400 hover:text-exact-blue"><Edit2 className="w-4 h-4" /></button>
-          <button onClick={() => setDeleteConfirm({ type: 'link', path: [...path, idx], name: l['@_caption'] })} className="p-1 text-gray-400 hover:text-exact-red"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={() => handleDelete([...path, idx], l['@_caption'])} className="p-1 text-gray-400 hover:text-exact-red"><Trash2 className="w-4 h-4" /></button>
         </div>
       </div>
     ));
@@ -172,7 +173,7 @@ export default function MenuEditor() {
             <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
               <button onClick={() => setEditModal({ type: 'link', path: [...path, idx, 'link'] })} className="p-1 text-gray-400 hover:text-exact-blue" title="Link toevoegen"><Plus className="w-4 h-4" /></button>
               <button onClick={() => setEditModal({ type: 'subsection', path: [...path, idx], initialData: sub })} className="p-1 text-gray-400 hover:text-exact-blue"><Edit2 className="w-4 h-4" /></button>
-              <button onClick={() => setDeleteConfirm({ type: 'subsection', path: [...path, idx], name: sub['@_caption'] })} className="p-1 text-gray-400 hover:text-exact-red"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => handleDelete([...path, idx], sub['@_caption'])} className="p-1 text-gray-400 hover:text-exact-red"><Trash2 className="w-4 h-4" /></button>
             </div>
           </div>
           {isExpanded && sub.link && (
@@ -207,7 +208,7 @@ export default function MenuEditor() {
             <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
               <button onClick={() => setEditModal({ type: 'subsection', path: [...path, idx, 'subsection'] })} className="p-1 text-gray-400 hover:text-exact-blue" title="Subsectie toevoegen"><Plus className="w-4 h-4" /></button>
               <button onClick={() => setEditModal({ type: 'section', path: [...path, idx], initialData: sec })} className="p-1 text-gray-400 hover:text-exact-blue"><Edit2 className="w-4 h-4" /></button>
-              <button onClick={() => setDeleteConfirm({ type: 'section', path: [...path, idx], name: sec['@_caption'] })} className="p-1 text-gray-400 hover:text-exact-red"><Trash2 className="w-4 h-4" /></button>
+              <button onClick={() => handleDelete([...path, idx], sec['@_caption'])} className="p-1 text-gray-400 hover:text-exact-red"><Trash2 className="w-4 h-4" /></button>
             </div>
           </div>
           {isExpanded && sec.subsection && (
@@ -271,7 +272,7 @@ export default function MenuEditor() {
                         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                           <button onClick={() => setEditModal({ type: 'section', path: ['megamenuextensions', 'megamenuextension', i, 'tab', j, 'section'] })} className="p-1.5 text-gray-500 hover:text-exact-blue bg-white rounded shadow-sm" title="Sectie toevoegen"><Plus className="w-4 h-4" /></button>
                           <button onClick={() => setEditModal({ type: 'tab', path: ['megamenuextensions', 'megamenuextension', i, 'tab', j], initialData: tab })} className="p-1.5 text-gray-500 hover:text-exact-blue bg-white rounded shadow-sm"><Edit2 className="w-4 h-4" /></button>
-                          <button onClick={() => setDeleteConfirm({ type: 'tab', path: ['megamenuextensions', 'megamenuextension', i, 'tab', j], name: tab['@_caption'] })} className="p-1.5 text-gray-500 hover:text-exact-red bg-white rounded shadow-sm"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => handleDelete(['megamenuextensions', 'megamenuextension', i, 'tab', j], tab['@_caption'])} className="p-1.5 text-gray-500 hover:text-exact-red bg-white rounded shadow-sm"><Trash2 className="w-4 h-4" /></button>
                         </div>
                       </div>
                       {isExpanded && tab.section && (
@@ -319,7 +320,7 @@ export default function MenuEditor() {
                       <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setEditModal({ type: 'subsection', path: ['quickmenuextensions', 'quickmenuextension', i, 'subsection'] })} className="p-1.5 text-gray-500 hover:text-exact-blue bg-white rounded shadow-sm" title="Subsectie toevoegen"><Plus className="w-4 h-4" /></button>
                         <button onClick={() => setEditModal({ type: 'quickmenuextension', path: ['quickmenuextensions', 'quickmenuextension', i], initialData: quickMenu })} className="p-1.5 text-gray-500 hover:text-exact-blue bg-white rounded shadow-sm"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => setDeleteConfirm({ type: 'quickmenuextension', path: ['quickmenuextensions', 'quickmenuextension', i], name: quickMenu['@_menuid'] || 'Quick Menu' })} className="p-1.5 text-gray-500 hover:text-exact-red bg-white rounded shadow-sm"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => handleDelete(['quickmenuextensions', 'quickmenuextension', i], quickMenu['@_menuid'] || 'Quick Menu')} className="p-1.5 text-gray-500 hover:text-exact-red bg-white rounded shadow-sm"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
                     {isExpanded && quickMenu.subsection && (
@@ -432,14 +433,7 @@ export default function MenuEditor() {
         </div>
       </div>
 
-      {deleteConfirm && (
-        <ConfirmModal
-          title="Verwijderen"
-          message={`Weet je zeker dat je '${deleteConfirm.name}' wilt verwijderen?`}
-          onConfirm={handleDelete}
-          onCancel={() => setDeleteConfirm(null)}
-        />
-      )}
+
 
       {editModal && (
         <MenuEditModal

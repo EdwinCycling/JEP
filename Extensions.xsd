@@ -1,83 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:redefine schemaLocation="ExtensionsBase.xsd">
-		<xs:complexType name="extensiontype">
-			<xs:complexContent>
-				<xs:extension base="extensiontype">
-					<xs:all>
-						<xs:element name="azurefunctions" type="azurefunctionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="customentities" type="customentitiestype" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="workflowdefinitions" type="workflowdefinitionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="roles" type="rolesType" minOccurs="0" maxOccurs="1"/>
-						<xs:element name="entities" type="entitiestype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="businesscomponentextensions" type="businesscomponentextensionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="megamenuextensions" type="megamenuextensionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="quickmenuextensions" type="quickmenuextensionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="applicationextensions" type="applicationextensionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="companysettingsextensions" type="companysettingsextensionstype" minOccurs="0" maxOccurs="1" />
-						<xs:element name="translationextensions" type="translationextensionstype" minOccurs="0" maxOccurs="1" />
-					</xs:all>
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-		<xs:complexType name="propertytype">
-			<xs:complexContent>
-				<xs:extension base="propertytype">
-					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-
-		<xs:complexType name="applicationextensiontype">
-			<xs:complexContent>
-				<xs:extension base="applicationextensiontype">
-					<!--application is now optional: you should define either application OR entity + pagetype-->
-					<xs:attribute name="application" type="applicationtype" use="optional" />
-					<xs:attribute name="entity" type="nowhitespacestringtype" use="optional" />
-					<xs:attribute name="pagetype" type="pagetypetype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-
-		<xs:complexType name="fieldtype">
-			<xs:complexContent>
-				<xs:extension base="fieldtype">
-					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-
-		<xs:complexType name="gridpageheaderfieldtype">
-			<xs:complexContent>
-				<xs:extension base="gridpageheaderfieldtype">
-					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-
-		<xs:complexType name="filtertype">
-			<xs:complexContent>
-				<xs:extension base="filtertype">
-					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-
-		<xs:complexType name="columntype">
-			<xs:complexContent>
-				<xs:extension base="columntype">
-					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
-					<xs:attribute name="url" type="hreftype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-
-		<xs:complexType name="gridcolumntype">
-			<xs:complexContent>
-				<xs:extension base="gridcolumntype">
-					<xs:attribute name="referstocustomentity" type="referstocustomentitytype" use="optional" />
-				</xs:extension>
-			</xs:complexContent>
-		</xs:complexType>
-	</xs:redefine>
+  <xs:element name="extension">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="customentities" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="customentity" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="property" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                        <xs:attribute name="length" type="xs:integer" use="optional" />
+                        <xs:attribute name="caption" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="description" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="entities" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="entity" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="property" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                        <xs:attribute name="caption" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="table" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="workflowdefinitions" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="workflowdefinition" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="stages" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="stage" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="actions" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="action" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:attribute name="name" type="xs:string" use="required" />
+                                          <xs:attribute name="tostage" type="xs:string" use="required" />
+                                          <xs:attribute name="caption" type="xs:string" use="optional" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="name" type="xs:string" use="required" />
+                              <xs:attribute name="caption" type="xs:string" use="optional" />
+                              <xs:attribute name="stagetype" use="optional">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="New" />
+                                    <xs:enumeration value="Standard" />
+                                    <xs:enumeration value="Restarted" />
+                                    <xs:enumeration value="Canceled" />
+                                    <xs:enumeration value="Final" />
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="description" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="businesscomponentextensions" minOccurs="0" />
+        <xs:element name="megamenuextensions" minOccurs="0" />
+        <xs:element name="quickmenuextensions" minOccurs="0" />
+        <xs:element name="applicationextensions" minOccurs="0" />
+        <xs:element name="roles" minOccurs="0" />
+        <xs:element name="translationextensions" minOccurs="0" />
+      </xs:all>
+      <xs:attribute name="code" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z0-9_]{3,30}" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="version" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+\.[0-9]+\.[0-9]+" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

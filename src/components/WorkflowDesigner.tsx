@@ -13,6 +13,8 @@ import {
   Handle,
   Position,
   Panel,
+  useReactFlow,
+  ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useJEPStore } from '../store';
@@ -34,7 +36,10 @@ import {
   ChevronRight,
   EyeOff,
   Unlock,
-  Info
+  Info,
+  Layout,
+  Columns,
+  Rows
 } from 'lucide-react';
 import { JEPWorkflowDefinition, JEPWorkflowStage, JEPWorkflowAction, JEPProperty, JEPWorkflowPropertySetting } from '../types';
 import WorkflowSettingsModal from './WorkflowSettingsModal';
@@ -77,7 +82,19 @@ const StageNode = ({ data, selected }: { data: { stage: JEPWorkflowStage, isSimu
 
   return (
     <div className={`px-4 py-3 rounded-xl border-2 shadow-sm min-w-[180px] transition-all duration-300 ${borderClass} ${bgClass}`}>
-      <Handle type="target" position={Position.Top} className="w-3 h-3 bg-gray-300" />
+      {/* Smart Handles on all sides */}
+      <Handle type="target" position={Position.Top} id="top-t" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Top} id="top-s" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      
+      <Handle type="target" position={Position.Bottom} id="bottom-t" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Bottom} id="bottom-s" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      
+      <Handle type="target" position={Position.Left} id="left-t" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Left} id="left-s" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      
+      <Handle type="target" position={Position.Right} id="right-t" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+      <Handle type="source" position={Position.Right} id="right-s" className="w-2 h-2 bg-gray-300 opacity-0 group-hover:opacity-100" />
+
       <div className="flex items-center space-x-3">
         <div className={`p-2 rounded-lg ${isCurrent && isSimulating ? 'bg-blue-500' : 'bg-gray-50'}`}>
           {getIcon()}
@@ -91,8 +108,15 @@ const StageNode = ({ data, selected }: { data: { stage: JEPWorkflowStage, isSimu
           </div>
         </div>
       </div>
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-gray-300" />
     </div>
+  );
+}
+
+export default function WorkflowDesigner() {
+  return (
+    <ReactFlowProvider>
+      <WorkflowDesignerInternal />
+    </ReactFlowProvider>
   );
 };
 
@@ -100,20 +124,21 @@ const nodeTypes = {
   stage: StageNode,
 };
 
-export default function WorkflowDesigner() {
-  const { model, updateModel, addNotification } = useJEPStore();
+function WorkflowDesignerInternal() {
+  const { model, updateModel, addNotification, addChangelog } = useJEPStore();
+  const { fitView } = useReactFlow();
   const workflows = model?.extension?.workflowdefinitions?.workflowdefinition || [];
-  const allWorkflows = Array.isArray(workflows) ? workflows : [workflows];
+  const allWorkflows = useMemo(() => Array.isArray(workflows) ? workflows : [workflows], [workflows]);
   
   const [activeWorkflowIndex, setActiveWorkflowIndex] = useState(0);
+  const activeWorkflow = useMemo(() => allWorkflows[activeWorkflowIndex], [allWorkflows, activeWorkflowIndex]);
   const [selectedStageName, setSelectedStageName] = useState<string | null>(null);
   const [editingAction, setEditingAction] = useState<{ stageName: string, actionName: string } | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationCurrentStage, setSimulationCurrentStage] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showSimulationInfo, setShowSimulationInfo] = useState(false);
-  
-  const activeWorkflow = allWorkflows[activeWorkflowIndex];
+  const [viewMode, setViewMode] = useState<'flow' | 'swimlane'>('flow');
 
   // Auto-layout logic
   const getLayoutedElements = (stages: JEPWorkflowStage[]) => {
@@ -130,70 +155,172 @@ export default function WorkflowDesigner() {
       });
     });
 
-    // Simple BFS for levels
-    const levels: Record<string, number> = {};
-    const startStage = stages.find(s => s["@_stagetype"] === 'New') || stages[0];
-    const queue = [{ id: startStage["@_name"], level: 0 }];
-    const visited = new Set([startStage["@_name"]]);
+    if (viewMode === 'swimlane') {
+      // Swimlane layout: Categories based on StageType
+      const categories = ['New', 'Standard', 'Restarted', 'Canceled', 'Final'];
+      const getCategory = (s: JEPWorkflowStage) => {
+        const type = s["@_stagetype"];
+        if (!type) return 'Standard';
+        return type as string;
+      };
 
-    while (queue.length > 0) {
-      const { id, level } = queue.shift()!;
-      levels[id] = level;
-
-      (adj[id] || []).forEach(nextId => {
-        if (!visited.has(nextId)) {
-          visited.add(nextId);
-          queue.push({ id: nextId, level: level + 1 });
+      const groupedStages: Record<string, JEPWorkflowStage[]> = {};
+      categories.forEach(cat => groupedStages[cat] = []);
+      
+      stages.forEach(s => {
+        const cat = getCategory(s);
+        if (groupedStages[cat]) {
+          groupedStages[cat].push(s);
+        } else {
+          if (!groupedStages['Standard']) groupedStages['Standard'] = [];
+          groupedStages['Standard'].push(s);
         }
+      });
+
+      // Create Lane background nodes
+       categories.forEach((cat, laneIdx) => {
+         nodes.push({
+           id: `lane-${cat}`,
+           data: { label: cat === 'Standard' ? 'Standaard' : cat },
+           position: { x: laneIdx * 300, y: 0 },
+           style: { 
+              width: 300, 
+              height: 1200, 
+              backgroundColor: laneIdx % 2 === 0 ? 'rgba(249, 250, 251, 0.4)' : 'transparent',
+              borderRight: '1px solid #e5e7eb',
+              borderBottom: 'none',
+              borderTop: 'none',
+              borderLeft: 'none',
+              zIndex: -1,
+              pointerEvents: 'none',
+              borderRadius: 0,
+              fontSize: '12px',
+              fontWeight: 'bold',
+              color: '#9ca3af',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              paddingTop: '20px'
+            },
+           type: 'default', // Using a default node for the lane header
+           selectable: false,
+           draggable: false,
+         });
+
+        // Add nodes in this lane
+        groupedStages[cat].forEach((stage, idx) => {
+          nodes.push({
+            id: stage["@_name"],
+            type: 'stage',
+            position: { x: laneIdx * 300 + 50, y: idx * 120 + 80 },
+            data: { 
+              stage,
+              isSimulating,
+              isCurrent: simulationCurrentStage === stage["@_name"]
+            },
+          });
+        });
+      });
+    } else {
+      // Flow layout (Original logic improved)
+      const levels: Record<string, number> = {};
+      const startStage = stages.find(s => s["@_stagetype"] === 'New') || stages[0];
+      const queue = [{ id: startStage["@_name"], level: 0 }];
+      const visited = new Set([startStage["@_name"]]);
+
+      while (queue.length > 0) {
+        const { id, level } = queue.shift()!;
+        levels[id] = level;
+
+        (adj[id] || []).forEach(nextId => {
+          if (!visited.has(nextId)) {
+            visited.add(nextId);
+            queue.push({ id: nextId, level: level + 1 });
+          }
+        });
+      }
+
+      stages.forEach(s => {
+        if (!(s["@_name"] in levels)) levels[s["@_name"]] = 0;
+      });
+
+      const levelGroups: Record<number, string[]> = {};
+      Object.entries(levels).forEach(([id, level]) => {
+        if (!levelGroups[level]) levelGroups[level] = [];
+        levelGroups[level].push(id);
+      });
+
+      stages.forEach(stage => {
+        const level = levels[stage["@_name"]];
+        const indexInLevel = levelGroups[level].indexOf(stage["@_name"]);
+        const totalInLevel = levelGroups[level].length;
+        const xOffset = (indexInLevel - (totalInLevel - 1) / 2) * 250;
+
+        nodes.push({
+          id: stage["@_name"],
+          type: 'stage',
+          position: { x: 400 + xOffset, y: level * 180 + 50 },
+          data: { 
+            stage,
+            isSimulating,
+            isCurrent: simulationCurrentStage === stage["@_name"]
+          },
+        });
       });
     }
 
-    // Handle unreachable stages
-    stages.forEach(s => {
-      if (!(s["@_name"] in levels)) {
-        levels[s["@_name"]] = 0;
-      }
-    });
-
-    // Group by levels for X positioning
-    const levelGroups: Record<number, string[]> = {};
-    Object.entries(levels).forEach(([id, level]) => {
-      if (!levelGroups[level]) levelGroups[level] = [];
-      levelGroups[level].push(id);
-    });
-
-    // Create nodes with positions
+    // Create smart edges
     stages.forEach(stage => {
-      const level = levels[stage["@_name"]];
-      const indexInLevel = levelGroups[level].indexOf(stage["@_name"]);
-      const totalInLevel = levelGroups[level].length;
-      
-      // Center the nodes horizontally
-      const xOffset = (indexInLevel - (totalInLevel - 1) / 2) * 250;
-
-      nodes.push({
-        id: stage["@_name"],
-        type: 'stage',
-        position: { x: 400 + xOffset, y: level * 150 + 50 },
-        data: { 
-          stage,
-          isSimulating,
-          isCurrent: simulationCurrentStage === stage["@_name"]
-        },
-      });
-
-      // Create edges
       const actions = Array.isArray(stage.actions?.action) ? stage.actions.action : [stage.actions?.action].filter(Boolean);
+      
       actions.forEach((action: any) => {
+        const targetStage = stages.find(s => s["@_name"] === action["@_tostage"]);
+        if (!targetStage) return;
+
+        // Smart Handle selection
+        let sourceHandle = 'bottom-s';
+        let targetHandle = 'top-t';
+
+        if (viewMode === 'swimlane') {
+          // In swimlane, nodes usually go right-to-left or top-to-bottom
+          // For now let's use right/left if they are in different lanes
+          const categories = ['New', 'Standard', 'Restarted', 'Canceled', 'Final'];
+          const sourceCat = stage["@_stagetype"] || 'Standard';
+          const targetCat = targetStage["@_stagetype"] || 'Standard';
+          
+          const sourceIdx = categories.indexOf(sourceCat === 'New' ? 'New' : sourceCat === 'Final' ? 'Final' : sourceCat === 'Restarted' ? 'Restarted' : sourceCat === 'Canceled' ? 'Canceled' : 'Standard');
+          const targetIdx = categories.indexOf(targetCat === 'New' ? 'New' : targetCat === 'Final' ? 'Final' : targetCat === 'Restarted' ? 'Restarted' : targetCat === 'Canceled' ? 'Canceled' : 'Standard');
+
+          if (sourceIdx < targetIdx) {
+            sourceHandle = 'right-s';
+            targetHandle = 'left-t';
+          } else if (sourceIdx > targetIdx) {
+            sourceHandle = 'left-s';
+            targetHandle = 'right-t';
+          } else {
+            sourceHandle = 'bottom-s';
+            targetHandle = 'top-t';
+          }
+        } else {
+          // In Flow mode, use vertical layout mostly
+          sourceHandle = 'bottom-s';
+          targetHandle = 'top-t';
+        }
+
         edges.push({
           id: `${stage["@_name"]}-${action["@_name"]}-${action["@_tostage"]}`,
           source: stage["@_name"],
           target: action["@_tostage"],
+          sourceHandle: sourceHandle,
+          targetHandle: targetHandle,
           label: action["@_caption"],
+          type: 'smoothstep', // Smoother lines
           animated: isSimulating && simulationCurrentStage === stage["@_name"],
           style: { 
             stroke: isSimulating && simulationCurrentStage === stage["@_name"] ? '#3b82f6' : '#003399', 
-            strokeWidth: isSimulating && simulationCurrentStage === stage["@_name"] ? 3 : 2 
+            strokeWidth: isSimulating && simulationCurrentStage === stage["@_name"] ? 3 : 2,
           },
           labelStyle: { fill: '#003399', fontWeight: 700, fontSize: 10 },
           labelBgPadding: [8, 4],
@@ -210,7 +337,7 @@ export default function WorkflowDesigner() {
     if (!activeWorkflow?.stages?.stage) return { nodes: [], edges: [] };
     const stages = Array.isArray(activeWorkflow.stages.stage) ? activeWorkflow.stages.stage : [activeWorkflow.stages.stage];
     return getLayoutedElements(stages);
-  }, [activeWorkflow, isSimulating, simulationCurrentStage]);
+  }, [activeWorkflow, isSimulating, simulationCurrentStage, viewMode]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
@@ -218,7 +345,11 @@ export default function WorkflowDesigner() {
   useEffect(() => {
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
-  }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
+    // Trigger fitView when layout changes
+    setTimeout(() => {
+      fitView({ duration: 800 });
+    }, 50);
+  }, [layoutedNodes, layoutedEdges, setNodes, setEdges, fitView]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -275,28 +406,30 @@ export default function WorkflowDesigner() {
     };
 
     updateModel((m) => {
-      const wfs = m.extension?.workflowdefinitions?.workflowdefinition;
-      const allWfs = Array.isArray(wfs) ? wfs : [wfs].filter(Boolean);
-      const newWorkflows = [...allWfs, newWorkflow];
-      if (m.extension && m.extension.workflowdefinitions) {
-        m.extension.workflowdefinitions.workflowdefinition = newWorkflows;
+      if (!m.extension) return;
+      if (!m.extension.workflowdefinitions) {
+        m.extension.workflowdefinitions = { workflowdefinition: [] };
       }
+      const wfs = m.extension.workflowdefinitions.workflowdefinition;
+      const allWfs = Array.isArray(wfs) ? [...wfs] : [wfs].filter(Boolean);
+      allWfs.push(newWorkflow);
+      m.extension.workflowdefinitions.workflowdefinition = allWfs;
     });
     
+    addChangelog(`Nieuwe workflow aangemaakt: ${newWorkflow["@_description"]} (${newWorkflow["@_name"]})`);
     setActiveWorkflowIndex(allWorkflows.length);
     addNotification("Nieuwe workflow aangemaakt.", "success");
   };
 
   const handleUpdateWorkflow = (updatedWorkflow: JEPWorkflowDefinition) => {
     updateModel((m) => {
-      const wfs = m.extension?.workflowdefinitions?.workflowdefinition;
-      if (!wfs) return;
-      const allWfs = Array.isArray(wfs) ? wfs : [wfs];
+      if (!m.extension?.workflowdefinitions) return;
+      const wfs = m.extension.workflowdefinitions.workflowdefinition;
+      const allWfs = Array.isArray(wfs) ? [...wfs] : [wfs];
       allWfs[activeWorkflowIndex] = updatedWorkflow;
-      if (m.extension && m.extension.workflowdefinitions) {
-        m.extension.workflowdefinitions.workflowdefinition = allWfs;
-      }
+      m.extension.workflowdefinitions.workflowdefinition = allWfs;
     });
+    addChangelog(`Workflow instellingen bijgewerkt voor: ${updatedWorkflow["@_name"]}`);
     addNotification("Workflow instellingen bijgewerkt.", "success");
   };
 
@@ -313,36 +446,51 @@ export default function WorkflowDesigner() {
     if (!editingAction) return;
 
     updateModel((m) => {
-      const wfs = m.extension?.workflowdefinitions?.workflowdefinition;
-      if (!wfs) return;
-      const allWfs = Array.isArray(wfs) ? wfs : [wfs];
+      if (!m.extension?.workflowdefinitions) return;
+      const wfs = m.extension.workflowdefinitions.workflowdefinition;
+      const allWfs = Array.isArray(wfs) ? [...wfs] : [wfs];
       const wf = allWfs[activeWorkflowIndex];
-      const stages = Array.isArray(wf.stages.stage) ? wf.stages.stage : [wf.stages.stage];
-      const stage = stages.find(s => s["@_name"] === editingAction.stageName);
-      if (!stage || !stage.actions?.action) return;
+      const stages = Array.isArray(wf.stages.stage) ? [...wf.stages.stage] : [wf.stages.stage];
+      const stageIndex = stages.findIndex(s => s["@_name"] === editingAction.stageName);
+      if (stageIndex === -1) return;
       
-      const actions = Array.isArray(stage.actions.action) ? stage.actions.action : [stage.actions.action];
-      const action = actions.find(a => a["@_name"] === editingAction.actionName);
-      if (!action) return;
+      const stage = { ...stages[stageIndex] };
+      if (!stage.actions?.action) return;
+      
+      const actions = Array.isArray(stage.actions.action) ? [...stage.actions.action] : [stage.actions.action];
+      const actionIndex = actions.findIndex(a => a["@_name"] === editingAction.actionName);
+      if (actionIndex === -1) return;
 
+      const action = { ...actions[actionIndex] };
       if (condition.trim() === "") {
         delete action["@_skipcondition"];
       } else {
         action["@_skipcondition"] = condition;
       }
+      
+      actions[actionIndex] = action;
+      stage.actions.action = actions;
+      stages[stageIndex] = stage;
+      wf.stages.stage = stages;
+      m.extension.workflowdefinitions.workflowdefinition = allWfs;
     });
+    addChangelog(`Skip conditie bijgewerkt voor actie '${editingAction.actionName}' in stage '${editingAction.stageName}'.`);
   };
 
   const startSimulation = () => {
     if (!activeWorkflow?.stages?.stage) return;
     const stages = Array.isArray(activeWorkflow.stages.stage) ? activeWorkflow.stages.stage : [activeWorkflow.stages.stage];
+    if (stages.length === 0) {
+      addNotification("Deze workflow heeft nog geen stages om te simuleren.", "warning");
+      return;
+    }
     const startStage = stages.find(s => s["@_stagetype"] === 'New') || stages[0];
     
     if (startStage) {
       setIsSimulating(true);
       setSimulationCurrentStage(startStage["@_name"]);
       setSelectedStageName(startStage["@_name"]);
-      addNotification("Simulatie gestart vanaf 'Nieuw' stage.", "info");
+      addNotification(`Simulatie gestart vanaf '${startStage["@_caption"]}' stage.`, "info");
     }
   };
 
@@ -368,23 +516,25 @@ export default function WorkflowDesigner() {
     if (!selectedStageName) return;
 
     updateModel((m) => {
-      const wfs = m.extension?.workflowdefinitions?.workflowdefinition;
-      if (!wfs) return;
-      const allWfs = Array.isArray(wfs) ? wfs : [wfs];
+      if (!m.extension?.workflowdefinitions) return;
+      const wfs = m.extension.workflowdefinitions.workflowdefinition;
+      const allWfs = Array.isArray(wfs) ? [...wfs] : [wfs];
       const wf = allWfs[activeWorkflowIndex];
       if (!wf) return;
 
-      const stages = Array.isArray(wf.stages.stage) ? wf.stages.stage : [wf.stages.stage];
-      const stage = stages.find(s => s["@_name"] === selectedStageName);
-      if (!stage) return;
+      const stages = Array.isArray(wf.stages.stage) ? [...wf.stages.stage] : [wf.stages.stage];
+      const stageIndex = stages.findIndex(s => s["@_name"] === selectedStageName);
+      if (stageIndex === -1) return;
+      
+      const stage = { ...stages[stageIndex] };
 
       if (!stage.propertysettings) stage.propertysettings = { propertysetting: [] };
       const settings = Array.isArray(stage.propertysettings.propertysetting) 
-        ? stage.propertysettings.propertysetting 
+        ? [...stage.propertysettings.propertysetting] 
         : [stage.propertysettings.propertysetting].filter(Boolean);
 
       let settingIndex = settings.findIndex(s => s["@_property"] === propName);
-      let setting = settingIndex !== -1 ? settings[settingIndex] : null;
+      let setting = settingIndex !== -1 ? { ...settings[settingIndex] } : null;
 
       if (!setting) {
         // Create new setting with defaults
@@ -395,6 +545,7 @@ export default function WorkflowDesigner() {
           "@_mandatory": "false"
         };
         settings.push(setting);
+        settingIndex = settings.length - 1;
       }
 
       // Toggle the value
@@ -407,14 +558,20 @@ export default function WorkflowDesigner() {
         setting[attr] = currentValue === 'false' ? 'true' : 'false';
       }
 
+      // Update in settings array
+      settings[settingIndex] = setting;
+
       // If setting is now at defaults (true, true, false), we can remove it to keep XML clean
       if (setting["@_visible"] === 'true' && setting["@_enabled"] === 'true' && setting["@_mandatory"] === 'false') {
-        const idx = settings.findIndex(s => s["@_property"] === propName);
-        if (idx !== -1) settings.splice(idx, 1);
+        settings.splice(settingIndex, 1);
       }
 
       stage.propertysettings.propertysetting = settings;
+      stages[stageIndex] = stage;
+      wf.stages.stage = stages;
+      m.extension.workflowdefinitions.workflowdefinition = allWfs;
     });
+    addChangelog(`Veldinstelling '${propName}' (${type}) gewijzigd in stage '${selectedStageName}'.`);
   };
 
   if (!activeWorkflow) {
@@ -460,6 +617,25 @@ export default function WorkflowDesigner() {
           >
             <Plus className="w-5 h-5" />
           </button>
+          
+          <div className="h-6 w-px bg-gray-200 mx-2" />
+          
+          <div className="flex bg-gray-100 p-1 rounded-xl">
+            <button 
+              onClick={() => setViewMode('flow')}
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'flow' ? 'bg-white text-exact-blue shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <Rows className="w-3.5 h-3.5" />
+              <span>Flow</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('swimlane')}
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'swimlane' ? 'bg-white text-exact-blue shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>Swimlane</span>
+            </button>
+          </div>
         </div>
         <div className="flex space-x-3">
           {isSimulating ? (
@@ -508,7 +684,7 @@ export default function WorkflowDesigner() {
         </AnimatePresence>
 
         {/* React Flow Canvas */}
-        <div className="flex-1 relative overflow-hidden">
+        <div className="flex-1 relative overflow-hidden workflow-designer-canvas">
           <ReactFlow
             nodes={nodes}
             edges={edges}

@@ -11,6 +11,8 @@ import { motion, AnimatePresence } from "motion/react";
 import LandingPage from "./components/LandingPage";
 import ToastContainer from "./components/ToastContainer";
 import PricingModal from "./components/PricingModal";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { APP_VERSION } from "./config";
 
 export default function App() {
   const model = useJEPStore((state) => state.model);
@@ -75,9 +77,10 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-exact-beige font-sans text-exact-dark overflow-hidden">
+    <ErrorBoundary>
+      <div className="h-screen flex flex-col bg-exact-beige font-sans text-exact-dark overflow-hidden">
       <header className="bg-white shrink-0 z-20 shadow-sm relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
+        <div className="max-w-[1580px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
           <div 
             className="flex items-center space-x-4 z-10 cursor-pointer group"
             onClick={() => setShowLanding(true)}
@@ -211,10 +214,15 @@ export default function App() {
       </main>
 
       <footer className="bg-white shrink-0 border-t border-gray-200 py-4 z-10">
-        <div className="max-w-7xl mx-auto px-4 flex justify-center space-x-8 text-sm font-medium text-gray-500">
-          <button onClick={() => setInfoModalType('disclaimer')} className="hover:text-exact-dark transition-colors">Disclaimer</button>
-          <button onClick={() => setInfoModalType('cookies')} className="hover:text-exact-dark transition-colors">Cookies</button>
-          <button onClick={() => setInfoModalType('team')} className="hover:text-exact-dark transition-colors">Het team</button>
+        <div className="max-w-[1580px] mx-auto px-4 flex justify-between items-center text-sm font-medium text-gray-500">
+          <div className="flex space-x-8">
+            <button onClick={() => setInfoModalType('disclaimer')} className="hover:text-exact-dark transition-colors">Disclaimer</button>
+            <button onClick={() => setInfoModalType('cookies')} className="hover:text-exact-dark transition-colors">Cookies</button>
+            <button onClick={() => setInfoModalType('team')} className="hover:text-exact-dark transition-colors">Het team</button>
+          </div>
+          <div className="text-gray-400 font-mono text-xs">
+            v{APP_VERSION}
+          </div>
         </div>
       </footer>
 
@@ -278,5 +286,6 @@ export default function App() {
       <ToastContainer />
       <CookieConsent />
     </div>
+    </ErrorBoundary>
   );
 }

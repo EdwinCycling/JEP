@@ -19,7 +19,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function PageCanvas() {
-  const { model, updateModel, addChangelog, addNotification } = useJEPStore();
+  const { model, updateModel, addChangelog, showDialog } = useJEPStore();
   const [selectedPageIdx, setSelectedPageIdx] = useState<number | null>(null);
   const [isAddingPage, setIsAddingPage] = useState(false);
   const [newPageName, setNewPageName] = useState("");
@@ -48,10 +48,12 @@ export default function PageCanvas() {
       if (!draft.extension) {
         draft.extension = {
           "@_code": model.extension?.["@_code"] || "",
-          "@_version": model.extension?.["@_version"] || "1.0"
+          "@_version": model.extension?.["@_version"] || "1.0.0"
         } as any;
       }
-      if (!draft.extension.applicationextensions) draft.extension.applicationextensions = { applicationextension: [] };
+      if (!draft.extension.applicationextensions) {
+        draft.extension.applicationextensions = { applicationextension: [] };
+      }
       
       const newExt = {
         "@_application": newPageName,
@@ -61,11 +63,11 @@ export default function PageCanvas() {
       
       const current = draft.extension.applicationextensions.applicationextension;
       if (Array.isArray(current)) {
-        current.push(newExt as any);
+        draft.extension.applicationextensions.applicationextension = [...current, newExt];
       } else if (current) {
-        draft.extension.applicationextensions.applicationextension = [current, newExt] as any;
+        draft.extension.applicationextensions.applicationextension = [current, newExt];
       } else {
-        draft.extension.applicationextensions.applicationextension = [newExt] as any;
+        draft.extension.applicationextensions.applicationextension = [newExt];
       }
     });
     
@@ -77,14 +79,14 @@ export default function PageCanvas() {
   const saveButton = (data: any) => {
     if (selectedPageIdx === null) return;
     updateModel((draft) => {
-      const page = (Array.isArray(draft.extension.applicationextensions.applicationextension) 
-        ? draft.extension.applicationextensions.applicationextension 
-        : [draft.extension.applicationextensions.applicationextension])[selectedPageIdx];
+      if (!draft.extension.applicationextensions) return;
+      const extensions = draft.extension.applicationextensions.applicationextension;
+      const page = Array.isArray(extensions) ? extensions[selectedPageIdx] : extensions;
       
       if (!page.button) page.button = [];
-      const buttons = Array.isArray(page.button) ? page.button : [page.button];
+      const buttons = Array.isArray(page.button) ? [...page.button] : [page.button];
       
-      if (editButton?.idx !== null) {
+      if (editButton?.idx !== null && editButton?.idx !== undefined) {
         buttons[editButton.idx] = data;
       } else {
         buttons.push(data);
@@ -97,15 +99,15 @@ export default function PageCanvas() {
   const saveField = (data: any) => {
     if (selectedPageIdx === null || editField === null) return;
     updateModel((draft) => {
-      const page = (Array.isArray(draft.extension.applicationextensions.applicationextension) 
-        ? draft.extension.applicationextensions.applicationextension 
-        : [draft.extension.applicationextensions.applicationextension])[selectedPageIdx];
+      if (!draft.extension.applicationextensions) return;
+      const extensions = draft.extension.applicationextensions.applicationextension;
+      const page = Array.isArray(extensions) ? extensions[selectedPageIdx] : extensions;
       
-      const sections = Array.isArray(page.cardsection) ? page.cardsection : [page.cardsection];
+      const sections = Array.isArray(page.cardsection) ? [...page.cardsection] : [page.cardsection];
       const section = sections[editField.sectionIdx];
       
       if (!section.field) section.field = [];
-      const fields = Array.isArray(section.field) ? section.field : [section.field];
+      const fields = Array.isArray(section.field) ? [...section.field] : [section.field];
       
       if (editField.fieldIdx !== null) {
         fields[editField.fieldIdx] = data;
@@ -113,24 +115,33 @@ export default function PageCanvas() {
         fields.push(data);
       }
       section.field = fields;
+      page.cardsection = sections;
     });
     setEditField(null);
   };
 
   const handleAddSection = () => {
     if (selectedPageIdx === null) return;
-    const sectionId = prompt("Voer Sectie ID in (bijv. General):");
-    if (!sectionId) return;
-
-    updateModel((draft) => {
-      const page = (Array.isArray(draft.extension.applicationextensions.applicationextension) 
-        ? draft.extension.applicationextensions.applicationextension 
-        : [draft.extension.applicationextensions.applicationextension])[selectedPageIdx];
-      
-      if (!page.cardsection) page.cardsection = [];
-      const sections = Array.isArray(page.cardsection) ? page.cardsection : [page.cardsection];
-      sections.push({ "@_id": sectionId, field: [] });
-      page.cardsection = sections;
+    
+    showDialog({
+      type: 'prompt',
+      title: 'Nieuwe Sectie',
+      message: 'Voer de Sectie ID in (bijv. General of Header):',
+      defaultValue: 'General',
+      onConfirm: (sectionId) => {
+        if (!sectionId) return;
+        updateModel((draft) => {
+          if (!draft.extension.applicationextensions) return;
+          const extensions = draft.extension.applicationextensions.applicationextension;
+          const page = Array.isArray(extensions) ? extensions[selectedPageIdx] : extensions;
+          
+          if (!page.cardsection) page.cardsection = [];
+          const sections = Array.isArray(page.cardsection) ? [...page.cardsection] : [page.cardsection].filter(Boolean);
+          sections.push({ "@_id": sectionId, field: [] });
+          page.cardsection = sections;
+        });
+        addChangelog(`Sectie '${sectionId}' toegevoegd aan pagina.`);
+      }
     });
   };
 

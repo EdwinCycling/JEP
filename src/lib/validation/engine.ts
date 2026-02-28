@@ -23,6 +23,9 @@ const errorMappings: Record<string, string> = {
   "is not a valid value of the list type": "De gekozen waarde komt niet voor in de toegestane lijst.",
   "Element 'property' is not allowed": "Het element 'property' staat op de verkeerde plek of is niet toegestaan.",
   "Expected is": "Er werd een ander element verwacht. Controleer de volgorde.",
+  "is not accepted by the pattern": "De waarde voldoet niet aan het vereiste formaat (bijv. voor 'code' of 'version').",
+  "attribute 'code'": "Het attribuut 'code' is verplicht en moet 3-30 hoofdletters of cijfers bevatten.",
+  "attribute 'version'": "Het attribuut 'version' is verplicht en moet in semver formaat (bijv. 1.0.0).",
 };
 
 function mapErrorMessage(msg: string): string {

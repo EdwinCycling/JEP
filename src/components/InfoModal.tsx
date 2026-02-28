@@ -19,7 +19,7 @@ export default function InfoModal({ type, onClose }: InfoModalProps) {
     },
     team: {
       title: 'Het Team',
-      text: 'Deze applicatie is ontwikkeld door een gepassioneerd team van experts op het gebied van Exact Online en moderne webtechnologieën. Ons doel is om partners te helpen efficiënter en effectiever te werken met Exact Online Premium extensies.'
+      text: 'Deze applicatie is ontwikkeld door een gepassioneerd team van experts op het gebied van Exact Online onder leiding van Edwin. Ons doel is om partners te helpen efficiënter en effectiever te werken met Exact Online Premium extensies.'
     }
   };
 
