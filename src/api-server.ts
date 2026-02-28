@@ -88,6 +88,7 @@ export function createApiApp() {
             "extension.megamenuextensions.megamenuextension.tab.section",
             "extension.megamenuextensions.megamenuextension.tab.section.subsection",
             "extension.megamenuextensions.megamenuextension.tab.section.subsection.link",
+            "extension.megamenuextensions.megamenuextension.tab.section.subsection.powerbilink",
             "extension.entities.entity",
             "extension.entities.entity.mandatoryfeaturesets.featureset",
             "extension.entities.entity.forbiddenfeaturesets.featureset",

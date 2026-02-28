@@ -249,6 +249,21 @@ export interface JEPMegaMenuLink {
   visibleexpression?: string;
 }
 
+export interface JEPPowerBILink {
+  "@_id": string;
+  "@_caption"?: string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatorylegislation?: string;
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  visibleexpression?: string;
+  powerbireportembedlink: string;
+  pagetitle?: string;
+}
+
 export interface JEPMegaMenuSubsection {
   "@_id": string;
   "@_caption"?: string;
@@ -261,6 +276,7 @@ export interface JEPMegaMenuSubsection {
   forbiddenfeaturesets?: JEPFeaturesets;
   visibleexpression?: string;
   link?: JEPMegaMenuLink | JEPMegaMenuLink[];
+  powerbilink?: JEPPowerBILink | JEPPowerBILink[];
 }
 
 export interface JEPMegaMenuSection {
