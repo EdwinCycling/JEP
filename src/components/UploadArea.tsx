@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useJEPStore } from "../store";
-import { Upload, FileCode, FilePlus, Sparkles } from "lucide-react";
+import { Upload, FileCode, FilePlus, Sparkles, Table, Layout, BarChart3, Workflow, PlusCircle } from "lucide-react";
 import { motion } from "motion/react";
 
 export default function UploadArea() {
@@ -10,18 +10,173 @@ export default function UploadArea() {
   const setExplanation = useJEPStore((state) => state.setExplanation);
   const addNotification = useJEPStore((state) => state.addNotification);
 
-  const startEmpty = () => {
-    const emptyModel = {
-      extension: {
-        "@_code": "CUSTOM_EXT",
-        "@_version": "1.0.0",
-        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-        "xsi:noNamespaceSchemaLocation": "Extension.xsd"
-      }
-    };
-    setModel(emptyModel as any);
-    setExplanation("Je bent gestart met een leeg extensiebestand. Voeg entiteiten, menu's of pagina's toe via het dashboard.");
-    addNotification("Nieuw leeg bestand aangemaakt!", "success");
+  const templates = [
+    {
+      id: 'empty',
+      title: 'Helemaal leeg',
+      description: 'Start met een schone lei, alleen de basis XML structuur.',
+      icon: <FilePlus className="w-6 h-6" />,
+      color: 'bg-slate-100 text-slate-600',
+      model: {
+        extension: {
+          "@_code": "CUSTOM_EXT",
+          "@_version": "1.0.0",
+          "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+          "xsi:noNamespaceSchemaLocation": "Extension.xsd"
+        }
+      },
+      explanation: "Je bent gestart met een leeg extensiebestand."
+    },
+    {
+      id: 'field',
+      title: 'Extra Veld',
+      description: 'Voeg een extra veld toe aan een bestaande entiteit (bijv. Account).',
+      icon: <PlusCircle className="w-6 h-6" />,
+      color: 'bg-emerald-100 text-emerald-600',
+      model: {
+        extension: {
+          "@_code": "EXT_FIELD",
+          "@_version": "1.0.0",
+          entities: {
+            entity: {
+              "@_name": "Account",
+              property: {
+                "@_name": "EXT_SpecialNote",
+                "@_type": "string",
+                "@_length": "100",
+                "@_caption": "Speciale Notitie"
+              }
+            }
+          }
+        }
+      },
+      explanation: "Dit template bevat een voorbeeld van een extra veld op de Account entiteit."
+    },
+    {
+      id: 'table',
+      title: 'Nieuwe Tabel',
+      description: 'Maak een volledig nieuwe tabel (Custom Entity) aan.',
+      icon: <Table className="w-6 h-6" />,
+      color: 'bg-blue-100 text-blue-600',
+      model: {
+        extension: {
+          "@_code": "EXT_TABLE",
+          "@_version": "1.0.0",
+          customentities: {
+            customentity: {
+              "@_name": "EXT_ProjectPhase",
+              "@_description": "Project Fasen",
+              property: [
+                { "@_name": "Code", "@_type": "string", "@_length": "20", "@_caption": "Code", "@_isdescription": "true" },
+                { "@_name": "Description", "@_type": "string", "@_length": "60", "@_caption": "Omschrijving" }
+              ]
+            }
+          }
+        }
+      },
+      explanation: "Dit template bevat een nieuwe Custom Entity genaamd ProjectPhase."
+    },
+    {
+      id: 'workflow',
+      title: 'Kleine Workflow',
+      description: 'Een basis bedrijfsproces met 3 stappen (New, In Progress, Done).',
+      icon: <Workflow className="w-6 h-6" />,
+      color: 'bg-purple-100 text-purple-600',
+      model: {
+        extension: {
+          "@_code": "EXT_WORKFLOW",
+          "@_version": "1.0.0",
+          workflowdefinitions: {
+            workflowdefinition: {
+              "@_name": "EXT_SimpleProcess",
+              "@_description": "Eenvoudig Proces",
+              stages: {
+                stage: [
+                  { "@_name": "New", "@_caption": "Nieuw", "@_stagetype": "New" },
+                  { "@_name": "InProgress", "@_caption": "In Behandeling" },
+                  { "@_name": "Done", "@_caption": "Afgerond", "@_stagetype": "Completed" }
+                ]
+              }
+            }
+          }
+        }
+      },
+      explanation: "Dit template bevat een eenvoudige workflow met drie fasen."
+    },
+    {
+      id: 'menu',
+      title: 'Menu Uitbreiding',
+      description: 'Voeg nieuwe tabbladen en links toe aan het Mega Menu.',
+      icon: <Layout className="w-6 h-6" />,
+      color: 'bg-amber-100 text-amber-600',
+      model: {
+        extension: {
+          "@_code": "EXT_MENU",
+          "@_version": "1.0.0",
+          megamenuextensions: {
+            megamenuextension: {
+              "@_menuid": "MegaMenu",
+              tab: {
+                "@_id": "CustomTools",
+                "@_caption": "Mijn Tools",
+                section: {
+                  "@_id": "General",
+                  subsection: {
+                    "@_id": "Links",
+                    link: {
+                      "@_id": "ExactSupport",
+                      "@_caption": "Exact Support",
+                      "@_href": "https://support.exact.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      explanation: "Dit template voegt een 'Mijn Tools' tabblad toe aan het Mega Menu."
+    },
+    {
+      id: 'powerbi',
+      title: 'Power BI Rapport',
+      description: 'Integreer een Power BI rapport direct in Exact Online.',
+      icon: <BarChart3 className="w-6 h-6" />,
+      color: 'bg-yellow-100 text-yellow-700',
+      model: {
+        extension: {
+          "@_code": "EXT_PBI",
+          "@_version": "1.0.0",
+          megamenuextensions: {
+            megamenuextension: {
+              "@_menuid": "MegaMenu",
+              tab: {
+                "@_id": "Reporting",
+                "@_existing": "true",
+                section: {
+                  "@_id": "BI",
+                  subsection: {
+                    "@_id": "Reports",
+                    powerbilink: {
+                      "@_id": "SalesDashboard",
+                      "@_caption": "Sales Dashboard",
+                      powerbireportembedlink: "https://app.powerbi.com/reportEmbed?reportId=your-id"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      explanation: "Dit template toont hoe je een Power BI rapport kunt embedden in het menu."
+    }
+  ];
+
+  const useTemplate = (template: typeof templates[0]) => {
+    setModel(template.model as any);
+    setExplanation(template.explanation);
+    addNotification(`${template.title} template geladen!`, "success");
   };
 
   const handleFile = async (file: File) => {
@@ -100,7 +255,7 @@ export default function UploadArea() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-12">
         {/* Upload Box */}
         <div
           onDragOver={(e) => {
@@ -140,32 +295,50 @@ export default function UploadArea() {
                 : "Sleep XML hierheen"}
             </h3>
             <p className="text-sm text-gray-500 font-sans">
-              of klik om te selecteren
+              of klik om een bestaand extensiebestand te laden
             </p>
           </div>
         </div>
 
-        {/* Start Empty Box */}
-        <button
-          onClick={startEmpty}
-          className="group relative border-2 border-dashed border-gray-300 rounded-3xl p-12 text-center transition-all duration-200 bg-white shadow-sm hover:shadow-md hover:border-exact-blue"
-        >
-          <div className="flex flex-col items-center">
-            <div className="w-16 h-16 bg-blue-50 text-exact-blue rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-              <Sparkles className="w-8 h-8" />
+        {/* Templates Section */}
+        <div>
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="w-8 h-8 bg-exact-gold/20 rounded-lg flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-exact-gold" />
             </div>
-            <h3 className="text-lg font-heading font-medium text-exact-dark mb-2">
-              Start vanaf nul
-            </h3>
-            <p className="text-sm text-gray-500 font-sans">
-              Begin met een bijna leeg bestand en bouw je extensie stap voor stap op.
-            </p>
+            <h2 className="text-xl font-heading font-bold text-exact-dark">Of start met een template</h2>
           </div>
-          
-          <div className="absolute top-4 right-4 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full border border-emerald-100 opacity-0 group-hover:opacity-100 transition-opacity">
-            Aanbevolen voor nieuwe projecten
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.map((template) => (
+              <motion.button
+                key={template.id}
+                whileHover={{ y: -4 }}
+                onClick={() => useTemplate(template)}
+                className="group relative bg-white border border-gray-100 rounded-3xl p-6 text-left shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+              >
+                <div className={`w-12 h-12 ${template.color} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  {template.icon}
+                </div>
+                <h3 className="text-lg font-heading font-bold text-exact-dark mb-2 group-hover:text-exact-blue transition-colors">
+                  {template.title}
+                </h3>
+                <p className="text-sm text-gray-500 font-sans leading-relaxed mb-4 flex-1">
+                  {template.description}
+                </p>
+                <div className="flex items-center text-xs font-bold text-exact-blue group-hover:translate-x-1 transition-transform">
+                  Template gebruiken <PlusCircle className="w-3 h-3 ml-2" />
+                </div>
+                
+                {template.id === 'empty' && (
+                  <div className="absolute top-4 right-4 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full border border-emerald-100">
+                    Schoon project
+                  </div>
+                )}
+              </motion.button>
+            ))}
           </div>
-        </button>
+        </div>
       </div>
     </motion.div>
   );
