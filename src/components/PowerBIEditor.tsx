@@ -12,13 +12,17 @@ import {
   Eye,
   EyeOff,
   AlertTriangle,
-  MousePointer2
+  MousePointer2,
+  Maximize2,
+  Minimize2,
+  X as CloseIcon
 } from 'lucide-react';
 import { JEPPowerBILink, JEPMegaMenuExtension, JEPQuickMenuExtension } from '../types';
 
 export default function PowerBIEditor() {
   const { model, updateModel, addNotification, addChangelog, showDialog } = useJEPStore();
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const megamenuextensions = model?.extension?.megamenuextensions?.megamenuextension;
   const allMegaMenuExts: JEPMegaMenuExtension[] = Array.isArray(megamenuextensions) 
@@ -325,7 +329,7 @@ export default function PowerBIEditor() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="w-full h-full"
+                          className="w-full h-full relative"
                         >
                           <iframe
                             src={item.link.powerbireportembedlink}
@@ -333,6 +337,13 @@ export default function PowerBIEditor() {
                             title="Power BI Preview"
                             sandbox="allow-scripts allow-same-origin allow-forms"
                           />
+                          <button 
+                            onClick={() => setIsFullscreen(true)}
+                            className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm text-gray-700 rounded-lg shadow-md hover:bg-white transition-all z-10"
+                            title="Volledig Scherm"
+                          >
+                            <Maximize2 className="w-4 h-4" />
+                          </button>
                         </motion.div>
                       ) : (
                         <motion.div 
@@ -421,6 +432,41 @@ export default function PowerBIEditor() {
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Preview Modal */}
+      <AnimatePresence>
+        {isFullscreen && previewId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/95 flex flex-col"
+          >
+            <div className="h-16 flex items-center justify-between px-8 border-b border-white/10 shrink-0">
+              <div className="flex items-center space-x-4">
+                <BarChart3 className="w-6 h-6 text-yellow-500" />
+                <h3 className="text-white font-heading font-bold">
+                  {powerbiLinks.find(l => l.link["@_id"] === previewId)?.link["@_caption"]}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setIsFullscreen(false)}
+                className="p-2 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+              >
+                <CloseIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 bg-white overflow-hidden relative">
+              <iframe
+                src={powerbiLinks.find(l => l.link["@_id"] === previewId)?.link.powerbireportembedlink}
+                className="w-full h-full border-0"
+                title="Power BI Fullscreen Preview"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

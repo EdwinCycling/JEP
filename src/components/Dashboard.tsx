@@ -44,14 +44,15 @@ import WorkflowDesigner from "./WorkflowDesigner";
 import SchemaDesigner from "./SchemaDesigner";
 import FeatureSetsEditor from './FeatureSetsEditor';
 import PowerBIEditor from './PowerBIEditor';
+import SettingsEditor from './SettingsEditor';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toPng } from 'html-to-image';
 import AzureFunctionsWizard from './AzureFunctionsWizard';
 import GlobalDialog from "./GlobalDialog";
-import { RotateCcw, BarChart3 } from "lucide-react";
+import { RotateCcw, BarChart3, Settings as SettingsIcon } from "lucide-react";
 
-type MainTab = 'tables' | 'menus' | 'pages' | 'workflows' | 'powerbi' | 'features';
+type MainTab = 'tables' | 'menus' | 'pages' | 'workflows' | 'powerbi' | 'features' | 'settings';
 
 const getTypeIcon = (type: string) => {
   switch (type?.toLowerCase()) {
@@ -674,6 +675,15 @@ export default function Dashboard() {
                   Feature set
                 </div>
               </button>
+              <button 
+                onClick={() => setMainTab('settings')}
+                className={`pb-4 text-sm font-medium font-sans border-b-2 transition-colors ${mainTab === 'settings' ? 'border-exact-red text-exact-red' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              >
+                <div className="flex items-center">
+                  <SettingsIcon className="w-4 h-4 mr-2" />
+                  Instellingen
+                </div>
+              </button>
             </div>
           </div>
 
@@ -890,6 +900,10 @@ export default function Dashboard() {
 
           {mainTab === 'features' && (
             <FeatureSetsEditor />
+          )}
+
+          {mainTab === 'settings' && (
+            <SettingsEditor />
           )}
         </div>
 

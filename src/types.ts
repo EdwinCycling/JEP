@@ -340,6 +340,49 @@ export interface JEPQuickMenuExtension {
   subsection?: JEPQuickMenuSubsection | JEPQuickMenuSubsection[];
 }
 
+export interface JEPDivisionSetting {
+  "@_id": string;
+  "@_caption": string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_type": 'boolean' | 'integer' | 'string' | 'double' | 'date';
+  "@_defaultvalue"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+}
+
+export interface JEPDivisionSettingsSection {
+  "@_id": string;
+  "@_caption": string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  setting?: JEPDivisionSetting | JEPDivisionSetting[];
+}
+
+export interface JEPDivisionSettingsTab {
+  "@_id": string;
+  "@_caption": string;
+  "@_captionid"?: string;
+  "@_translationid"?: string;
+  "@_existing"?: string;
+  "@_featurecheck"?: 'All' | 'Any' | 'None';
+  mandatoryfeaturesets?: JEPFeaturesets;
+  forbiddenfeaturesets?: JEPFeaturesets;
+  mandatorylegislation?: string;
+  section?: JEPDivisionSettingsSection | JEPDivisionSettingsSection[];
+}
+
+export interface JEPDivisionSettingsExtensions {
+  tab?: JEPDivisionSettingsTab | JEPDivisionSettingsTab[];
+}
+
 export interface JEPRoleCustomEntity {
   "@_name": string;
   "@_permission": string;
@@ -377,6 +420,7 @@ export interface JEPModel {
     applicationextensions?: {
       applicationextension?: JEPApplicationExtension[];
     };
+    divisionsettingsextensions?: JEPDivisionSettingsExtensions;
     translationextensions?: {
       translation?: JEPTranslation[];
     };
