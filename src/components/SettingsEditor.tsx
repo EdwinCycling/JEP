@@ -14,12 +14,15 @@ import {
   Type,
   Calendar,
   CheckSquare,
-  Hash
+  Hash,
+  Copy,
+  Check
 } from 'lucide-react';
 import { JEPTranslation, JEPDivisionSettingsTab } from '../types';
 
 export default function SettingsEditor() {
   const { model, updateModel, addChangelog, addNotification, showDialog } = useJEPStore();
+  const [copiedId, setCopiedId] = React.useState<string | null>(null);
   
   const translations = model?.extension?.translationextensions?.translation || [];
   const translationsArray = Array.isArray(translations) ? translations : [translations].filter(Boolean);
@@ -61,6 +64,15 @@ export default function SettingsEditor() {
         if (langItem) langItem["#text"] = text;
       }
     });
+    // Add to changelog on blur or after debounce would be better, but for now simple:
+    addChangelog(`Vertaling tekst bijgewerkt voor ID: ${transId} (${langCode})`);
+  };
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    addNotification(`ID "${id}" gekopieerd naar klembord`, "success");
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleRemoveTranslation = (transId: string) => {
@@ -159,6 +171,7 @@ export default function SettingsEditor() {
       const settings = Array.isArray(section.setting) ? section.setting : [section.setting];
       (settings[setIdx] as any)[key] = value;
     });
+    addChangelog(`Division setting '${key}' bijgewerkt naar: ${value}`);
   };
 
   return (
@@ -212,10 +225,12 @@ export default function SettingsEditor() {
                           type="text"
                           value={tab["@_caption"]}
                           onChange={(e) => {
+                            const newVal = e.target.value;
                             updateModel((draft) => {
                               const tabs = draft.extension.divisionsettingsextensions.tab;
-                              (Array.isArray(tabs) ? tabs : [tabs])[tIdx]["@_caption"] = e.target.value;
+                              (Array.isArray(tabs) ? tabs : [tabs])[tIdx]["@_caption"] = newVal;
                             });
+                            addChangelog(`Division tab caption bijgewerkt naar: ${newVal}`);
                           }}
                           className="font-bold text-exact-dark bg-transparent border-none focus:ring-0 p-0 text-lg"
                         />
@@ -349,17 +364,28 @@ export default function SettingsEditor() {
                       <div className="p-2 bg-purple-50 rounded-lg">
                         <Languages className="w-4 h-4 text-exact-purple" />
                       </div>
-                      <input 
-                        type="text"
-                        value={trans["@_id"]}
-                        onChange={(e) => {
-                          updateModel((draft) => {
-                            const translations = draft.extension.translationextensions.translation;
-                            (Array.isArray(translations) ? translations : [translations])[i]["@_id"] = e.target.value;
-                          });
-                        }}
-                        className="font-mono text-sm font-bold text-blue-600 bg-transparent border-none focus:ring-0 p-0"
-                      />
+                      <div className="flex items-center space-x-2">
+                        <input 
+                          type="text"
+                          value={trans["@_id"]}
+                          onChange={(e) => {
+                            const newVal = e.target.value;
+                            updateModel((draft) => {
+                              const translations = draft.extension.translationextensions.translation;
+                              (Array.isArray(translations) ? translations : [translations])[i]["@_id"] = newVal;
+                            });
+                            addChangelog(`Translation ID bijgewerkt naar: ${newVal}`);
+                          }}
+                          className="font-mono text-sm font-bold text-blue-600 bg-transparent border-none focus:ring-0 p-0 w-48"
+                        />
+                        <button 
+                          onClick={() => handleCopyId(trans["@_id"])}
+                          className="p-1 text-gray-400 hover:text-exact-blue transition-all"
+                          title="Kopieer Translation ID"
+                        >
+                          {copiedId === trans["@_id"] ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
                     </div>
                     <button 
                       onClick={() => handleRemoveTranslation(trans["@_id"])}
