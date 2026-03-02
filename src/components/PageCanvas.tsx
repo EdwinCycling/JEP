@@ -75,7 +75,9 @@ export default function PageCanvas() {
       const newExt = {
         "@_application": newPageName,
         "@_existing": "true",
-        cardsection: []
+        cardsection: [],
+        button: [],
+        monitor: { "@_existing": "true", item: [] }
       };
       
       const current = draft.extension.applicationextensions.applicationextension;
@@ -695,9 +697,17 @@ function FieldEditorModal({ initialData, allEntities, onSave, onDelete, onClose 
     (Array.isArray(e.property) ? e.property : [e.property]).filter(Boolean).map((p: any) => ({
       entity: e["@_name"],
       name: p["@_name"],
-      caption: p["@_caption"]
+      caption: p["@_caption"] || p["@_name"]
     }))
   );
+
+  const handlePropertyChange = (val: string) => {
+    setDataField(val);
+    const prop = allProperties.find(p => p.name === val);
+    if (prop && !caption) {
+      setCaption(prop.caption);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
@@ -713,7 +723,7 @@ function FieldEditorModal({ initialData, allEntities, onSave, onDelete, onClose 
         <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
           <div>
             <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Koppel aan Property</label>
-            <select value={dataField} onChange={(e) => setDataField(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+            <select value={dataField} onChange={(e) => handlePropertyChange(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
               <option value="">Selecteer een property...</option>
               {allProperties.map((p: any) => (
                 <option key={`${p.entity}_${p.name}`} value={p.name}>{p.entity} - {p.caption || p.name}</option>
@@ -729,7 +739,8 @@ function FieldEditorModal({ initialData, allEntities, onSave, onDelete, onClose 
             <select value={controlType} onChange={(e) => setControlType(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
               <option value="text">Tekstveld</option>
               <option value="list">Keuzelijst</option>
-              <option value="radio">Keuzerondjes</option>
+              <option value="radiobuttonlist">Keuzerondjes</option>
+              <option value="checkbox">Vinkje (Checkbox)</option>
             </select>
           </div>
           <div className="pt-4 border-t border-gray-100">

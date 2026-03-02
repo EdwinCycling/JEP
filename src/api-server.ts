@@ -172,8 +172,14 @@ export function createApiApp() {
       const fixBooleanAttributes = (obj: any) => {
         if (typeof obj === 'object' && obj !== null) {
           for (const key in obj) {
-            if (key.startsWith('@_') && typeof obj[key] === 'boolean') {
-              obj[key] = obj[key] ? "true" : "false";
+            // Fix boolean values to strings "true"/"false"
+            if (key.startsWith('@_') && (typeof obj[key] === 'boolean' || obj[key] === null || obj[key] === undefined)) {
+              if (obj[key] === null || obj[key] === undefined) {
+                // Remove null/undefined attributes to avoid "standalone" attributes in XML
+                delete obj[key];
+              } else {
+                obj[key] = obj[key] ? "true" : "false";
+              }
             } else if (typeof obj[key] === 'object') {
               fixBooleanAttributes(obj[key]);
             }
