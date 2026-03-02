@@ -31,13 +31,39 @@ export default function XmlEditorScreen({ onClose }: XmlEditorScreenProps) {
     if (model) {
       const builder = new XMLBuilder({
         ignoreAttributes: false,
+        attributeNamePrefix: "@_",
         format: true,
         suppressEmptyNode: true,
+        textNodeName: "#text"
       });
       
-      // Remove any existing ?xml declaration from model copy
+      // Deep copy and clean model
       const cleanModel = JSON.parse(JSON.stringify(model));
       if (cleanModel["?xml"]) delete cleanModel["?xml"];
+      
+      // Ensure root attributes for XSD are present
+      if (cleanModel.extension) {
+        cleanModel.extension["@_xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance";
+        cleanModel.extension["@_xsi:noNamespaceSchemaLocation"] = "Extension.xsd";
+      }
+
+      // Fix boolean attributes to be strings "true"/"false"
+      const fixBooleans = (obj: any) => {
+        if (typeof obj === 'object' && obj !== null) {
+          for (const key in obj) {
+            if (key.startsWith('@_')) {
+              if (typeof obj[key] === 'boolean') {
+                obj[key] = obj[key] ? "true" : "false";
+              } else if (obj[key] === null || obj[key] === undefined) {
+                delete obj[key];
+              }
+            } else if (typeof obj[key] === 'object') {
+              fixBooleans(obj[key]);
+            }
+          }
+        }
+      };
+      fixBooleans(cleanModel);
       
       const xmlContent = builder.build(cleanModel);
       setXml(`<?xml version="1.0" encoding="utf-8"?>\n${xmlContent}`);

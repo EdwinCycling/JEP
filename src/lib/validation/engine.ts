@@ -26,6 +26,8 @@ const errorMappings: Record<string, string> = {
   "is not accepted by the pattern": "De waarde voldoet niet aan het vereiste formaat (bijv. voor 'code' of 'version').",
   "attribute 'code'": "Het attribuut 'code' is verplicht en moet 3-30 hoofdletters of cijfers bevatten.",
   "attribute 'version'": "Het attribuut 'version' is verplicht en moet in semver formaat (bijv. 1.0.0).",
+  "readonly": "Het attribuut 'readonly' wordt niet ondersteund in de XSD. Verwijder dit uit de XML.",
+  "is not a valid value of the atomic type 'xs:boolean'": "De waarde moet 'true' of 'false' zijn (geen losse woorden).",
 };
 
 function mapErrorMessage(msg: string): string {
@@ -68,12 +70,14 @@ export async function validateWithSchema(xml: string, xsd: string): Promise<Vali
     };
   } catch (error) {
     console.error("Validation Engine Error:", error);
+    const techMsg = error instanceof Error ? error.message : String(error);
     return {
       isValid: false,
       errors: [{
         line: 1,
         column: 1,
-        message: "Er is een technische fout opgetreden tijdens de validatie."
+        message: `Technische fout bij validatie: ${techMsg}. Controleer of de XML goed gevormd is.`,
+        rawContext: techMsg
       }]
     };
   }
