@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Save } from 'lucide-react';
+import { X, Save, Zap, ExternalLink } from 'lucide-react';
+import { useJEPStore } from '../store';
 
 interface MenuEditModalProps {
   type: 'tab' | 'section' | 'subsection' | 'link' | 'quickmenuextension';
@@ -184,13 +185,29 @@ export default function MenuEditModal({ type, initialData, onSave, onClose }: Me
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">URL (Href)</label>
-                  <input
-                    type="text"
-                    value={href}
-                    onChange={(e) => setHref(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-exact-blue"
-                    placeholder="https://..."
-                  />
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={href}
+                      onChange={(e) => setHref(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-exact-blue"
+                      placeholder="https://... of bestandsnaam.aspx"
+                    />
+                    
+                    {/* Quick Link Helpers */}
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase py-1">Snelkoppelingen:</span>
+                      {model?.extension?.customentities?.customentity && (Array.isArray(model.extension.customentities.customentity) ? model.extension.customentities.customentity : [model.extension.customentities.customentity]).map((ce: any) => (
+                        <button 
+                          key={ce["@_name"]}
+                          onClick={() => setHref(`ExtCustomEntities.aspx?Entity=${ce["@_name"]}`)}
+                          className="text-[10px] bg-blue-50 text-exact-blue px-2 py-1 rounded hover:bg-blue-100 flex items-center"
+                        >
+                          <ExternalLink className="w-3 h-3 mr-1" /> {ce["@_description"] || ce["@_name"]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <div className="flex items-center mt-2">
                   <input

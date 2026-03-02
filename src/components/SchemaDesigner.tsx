@@ -40,6 +40,7 @@ import {
 } from 'lucide-react';
 import CustomEntityModal from './CustomEntityModal';
 import EditorModal from './EditorModal';
+import StandardTableModal from './StandardTableModal';
 
 // Custom Node for Database Tables
 const TableNode = ({ data, selected }: { data: { entity: any, isCustom: boolean, onAddField: (e: string) => void, onEditField: (e: string, p: any) => void, onDeleteEntity: (e: string) => void, onEditEntity: (e: string) => void }, selected: boolean }) => {
@@ -167,6 +168,7 @@ function SchemaDesignerInternal() {
   const { fitView } = useReactFlow();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddingEntity, setIsAddingEntity] = useState(false);
+  const [isAddingStandardTable, setIsAddingStandardTable] = useState(false);
   const [editingField, setEditingField] = useState<{ entityName: string, prop: any | null } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -440,6 +442,10 @@ function SchemaDesignerInternal() {
       {/* Modals */}
       {isAddingEntity && (
         <CustomEntityModal onClose={() => setIsAddingEntity(false)} />
+      )}
+
+      {isAddingStandardTable && (
+        <StandardTableModal onClose={() => setIsAddingStandardTable(false)} />
       )}
 
       {editingField && (

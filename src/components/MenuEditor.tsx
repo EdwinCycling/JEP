@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useJEPStore } from '../store';
-import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, Link as LinkIcon, Folder, LayoutGrid, Menu as MenuIcon, Info } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronRight, ChevronDown, Link as LinkIcon, Folder, LayoutGrid, Menu as MenuIcon, Info, Zap } from 'lucide-react';
 import MenuEditModal from './MenuEditModal';
 
 export default function MenuEditor() {
@@ -151,7 +151,7 @@ export default function MenuEditor() {
     ));
   };
 
-  const renderSubsection = (subsection: any, path: any[]) => {
+  const renderSubsection = (subsection: any, path: any[], isQuickMenu = false) => {
     if (!subsection) return null;
     const isArray = Array.isArray(subsection);
     const subsections = isArray ? subsection : [subsection];
@@ -167,8 +167,9 @@ export default function MenuEditor() {
               {sub.link ? (
                 isExpanded ? <ChevronDown className="w-4 h-4 mr-1 text-gray-400" /> : <ChevronRight className="w-4 h-4 mr-1 text-gray-400" />
               ) : <span className="w-5" />}
-              <LayoutGrid className="w-4 h-4 mr-2 text-exact-gold" />
+              {isQuickMenu ? <Zap className="w-4 h-4 mr-2 text-emerald-500" /> : <LayoutGrid className="w-4 h-4 mr-2 text-exact-gold" />}
               <span className="font-medium text-gray-800">{sub['@_caption']}</span>
+              {isQuickMenu && <span className="ml-2 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-tighter">Snelmenu</span>}
             </div>
             <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
               <button onClick={() => setEditModal({ type: 'link', path: [...path, idx, 'link'] })} className="p-1 text-gray-400 hover:text-exact-blue" title="Link toevoegen"><Plus className="w-4 h-4" /></button>
@@ -325,7 +326,7 @@ export default function MenuEditor() {
                     </div>
                     {isExpanded && quickMenu.subsection && (
                       <div className="p-2 bg-white">
-                        {renderSubsection(quickMenu.subsection, ['quickmenuextensions', 'quickmenuextension', i, 'subsection'])}
+                        {renderSubsection(quickMenu.subsection, ['quickmenuextensions', 'quickmenuextension', i, 'subsection'], true)}
                       </div>
                     )}
                   </div>
@@ -413,8 +414,8 @@ export default function MenuEditor() {
             
             {/* Quick Menu */}
             <div className="relative group">
-              <button className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-blue-700 transition-colors">
-                <Plus className="w-5 h-5" />
+              <button className="w-8 h-8 rounded-lg bg-blue-800 flex items-center justify-center hover:bg-blue-700 transition-colors border border-blue-400 shadow-inner" title="Snelmenu (QuickMenu)">
+                <LayoutGrid className="w-5 h-5" />
               </button>
               <div className="absolute top-full right-0 mt-0 bg-white text-gray-800 shadow-2xl rounded-b-md w-64 hidden group-hover:block z-50 border border-gray-100">
                 {quickMenusArray.length === 0 ? (

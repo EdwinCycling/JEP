@@ -39,8 +39,8 @@ export async function createApp() {
 
 if (process.env.NODE_ENV !== "test") {
   createApp().then(app => {
-    // Port 3000 is forced by user request
-    const PORT = 3000;
+    // Port 3001 is used based on user's instruction for curl
+    const PORT = 3001;
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server is FORCED to run on http://localhost:${PORT}`);
       console.log(`You can test the application at: http://localhost:${PORT}/`);

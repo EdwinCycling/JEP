@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useJEPStore } from '../store';
 import { 
   Plus, 
@@ -14,15 +14,32 @@ import {
   Info,
   AlertCircle,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  Search,
+  Database
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const COMMON_PAGES = [
+  "CRMAccounts.aspx",
+  "CRMAccountCard.aspx",
+  "CRMContactCard.aspx",
+  "InvSerialBatchNumbers.aspx",
+  "InvSerialBatchNumberCard.aspx",
+  "SlsSalesOrderEntry.aspx",
+  "SlsSalesOrders.aspx",
+  "PrcPurchaseOrderEntry.aspx",
+  "PrcPurchaseOrders.aspx",
+  "InvItems.aspx",
+  "InvItemCard.aspx"
+];
 
 export default function PageCanvas() {
   const { model, updateModel, addChangelog, showDialog } = useJEPStore();
   const [selectedPageIdx, setSelectedPageIdx] = useState<number | null>(null);
   const [isAddingPage, setIsAddingPage] = useState(false);
   const [newPageName, setNewPageName] = useState("");
+  const [pageSearchTerm, setPageSearchTerm] = useState("");
   
   // Modals for editing components
   const [editButton, setEditButton] = useState<{ idx: number | null, data?: any } | null>(null);
@@ -405,30 +422,61 @@ export default function PageCanvas() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]"
             >
-              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h3 className="text-lg font-heading font-bold text-exact-dark">Pagina Aanpassing Toevoegen</h3>
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 shrink-0">
+                <div className="flex items-center space-x-2">
+                  <Monitor className="w-5 h-5 text-exact-blue" />
+                  <h3 className="text-lg font-heading font-bold text-exact-dark">Pagina Aanpassing Toevoegen</h3>
+                </div>
                 <button onClick={() => setIsAddingPage(false)} className="text-gray-400 hover:text-gray-600">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="p-6 space-y-4">
-                <div>
+              <div className="p-6 space-y-4 flex flex-col overflow-hidden">
+                <div className="shrink-0">
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Pagina Naam (.aspx)</label>
-                  <input 
-                    type="text" 
-                    value={newPageName}
-                    onChange={(e) => setNewPageName(e.target.value)}
-                    placeholder="bijv. CRMAccount.aspx"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-transparent outline-none"
-                  />
-                  <p className="mt-2 text-[10px] text-gray-400 italic">
-                    Tip: Gebruik de exacte bestandsnaam van de pagina in Exact Online.
-                  </p>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                      type="text" 
+                      value={newPageName}
+                      onChange={(e) => setNewPageName(e.target.value)}
+                      placeholder="bijv. CRMAccount.aspx"
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-exact-blue focus:border-transparent outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto border border-gray-100 rounded-xl bg-gray-50/30">
+                  <div className="p-2 space-y-1">
+                    <h4 className="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Suggesties</h4>
+                    {COMMON_PAGES.filter(p => p.toLowerCase().includes(newPageName.toLowerCase())).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setNewPageName(page)}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center justify-between ${
+                          newPageName === page ? "bg-blue-100 text-exact-blue font-bold" : "hover:bg-white text-gray-600"
+                        }`}
+                      >
+                        {page}
+                        {newPageName === page && <CheckCircle2 className="w-4 h-4" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 shrink-0">
+                  <div className="flex items-start space-x-3">
+                    <Info className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <p className="text-[10px] text-blue-800 leading-relaxed font-sans opacity-90">
+                      Met <code>&lt;applicationextension&gt;</code> kun je ELKE standaard Exact .aspx pagina selecteren. 
+                      Als je bijvoorbeeld velden wilt toevoegen aan <strong>InvSerialBatchNumbers.aspx</strong>, voer dan die naam hierboven in.
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 shrink-0">
                 <button 
                   onClick={() => setIsAddingPage(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800"
@@ -438,7 +486,7 @@ export default function PageCanvas() {
                 <button 
                   onClick={handleAddPage}
                   disabled={!newPageName}
-                  className="px-4 py-2 bg-exact-blue text-white text-sm font-medium rounded-lg hover:bg-blue-800 disabled:opacity-50 transition-colors"
+                  className="px-6 py-2 bg-exact-blue text-white text-sm font-bold rounded-lg hover:bg-blue-800 disabled:opacity-50 transition-all shadow-md"
                 >
                   Toevoegen
                 </button>

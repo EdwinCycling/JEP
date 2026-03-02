@@ -45,6 +45,7 @@ import SchemaDesigner from "./SchemaDesigner";
 import FeatureSetsEditor from './FeatureSetsEditor';
 import PowerBIEditor from './PowerBIEditor';
 import SettingsEditor from './SettingsEditor';
+import StandardTableModal from "./StandardTableModal";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toPng } from 'html-to-image';
@@ -110,6 +111,7 @@ export default function Dashboard() {
   const [mainTab, setMainTab] = useState<MainTab>('tables');
   const [isXmlEditorOpen, setIsXmlEditorOpen] = useState(false);
   const [isAddingCustomEntity, setIsAddingCustomEntity] = useState(false);
+  const [isAddingStandardTable, setIsAddingStandardTable] = useState(false);
   const [isAzureWizardOpen, setIsAzureWizardOpen] = useState(false);
   const [viewingConnections, setViewingConnections] = useState<any | null>(null);
   const [tableMode, setTableMode] = useState<'list' | 'schema'>('list');
@@ -798,6 +800,13 @@ export default function Dashboard() {
                     <Plus className="w-4 h-4 mr-2" />
                     Nieuwe Entiteit
                   </button>
+                  <button
+                    onClick={() => setIsAddingStandardTable(true)}
+                    className="px-6 py-4 text-sm font-heading font-bold text-emerald-600 hover:bg-emerald-50 flex items-center whitespace-nowrap border-b-2 border-transparent"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Bestaande Tabel Uitbreiden
+                  </button>
                 </div>
 
                 <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-xl ml-4">
@@ -1137,6 +1146,10 @@ export default function Dashboard() {
 
       {isAddingCustomEntity && (
         <CustomEntityModal onClose={() => setIsAddingCustomEntity(false)} />
+      )}
+
+      {isAddingStandardTable && (
+        <StandardTableModal onClose={() => setIsAddingStandardTable(false)} />
       )}
 
       {isAzureWizardOpen && (
