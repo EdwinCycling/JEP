@@ -1,5 +1,3 @@
-import { validateXML } from 'xmllint-wasm';
-
 export interface ValidationError {
   line: number;
   column: number;
@@ -39,34 +37,33 @@ function mapErrorMessage(msg: string): string {
   return msg;
 }
 
-export async function validateWithSchema(xml: string, xsd: string): Promise<ValidationResult> {
+export async function validateWithSchema(xml: string, xsd?: string): Promise<ValidationResult> {
   try {
-    const result = await validateXML({
-      xml: xml,
-      schema: xsd,
+    const response = await fetch("/api/validate-xml", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ xml }),
     });
 
-    if (result.valid) {
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || "Server validatie mislukt.");
+    }
+
+    const result = await response.json();
+    
+    if (result.isValid) {
       return { isValid: true, errors: [] };
     }
 
-    const errors: ValidationError[] = (result.errors || []).map(errObj => {
-      const err = typeof errObj === 'string' ? errObj : (errObj as any).message || String(errObj);
-      // xmllint errors are often strings like "file.xml:10: element prop: Schemas validity error..."
-      const match = err.match(/:(\d+):/);
-      const line = match ? parseInt(match[1]) : 1;
-      
-      return {
-        line,
-        column: 1,
-        message: mapErrorMessage(err),
-        rawContext: err
-      };
-    });
+    const mappedErrors: ValidationError[] = (result.errors || []).map((err: any) => ({
+      ...err,
+      message: mapErrorMessage(err.message)
+    }));
 
     return {
       isValid: false,
-      errors
+      errors: mappedErrors
     };
   } catch (error) {
     console.error("Validation Engine Error:", error);
@@ -76,7 +73,7 @@ export async function validateWithSchema(xml: string, xsd: string): Promise<Vali
       errors: [{
         line: 1,
         column: 1,
-        message: `Technische fout bij validatie: ${techMsg}. Controleer of de XML goed gevormd is.`,
+        message: `Fout bij verbinden met validatie-server: ${techMsg}. Controleer of de server draait.`,
         rawContext: techMsg
       }]
     };

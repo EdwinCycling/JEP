@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
+import { validateXML } from 'xmllint-wasm';
 import fs from "fs";
 import path from "path";
 import helmet from "helmet";
@@ -214,17 +215,41 @@ export function createApiApp() {
         return res.status(400).json({ isValid: false, message: "Geen XSD bestand gevonden." });
       }
 
-      if (!xml || !xml.includes("<extension")) {
-        return res.json({
-          isValid: false,
-          errors: [{ message: "Ongeldige XML structuur", line: "1", suggestion: "Zorg voor een <extension> tag." }]
-        });
+      const xsdContent = fs.readFileSync(xsdPath, "utf-8");
+      
+      // Perform validation using xmllint-wasm on server (more stable)
+      const result = await validateXML({
+        xml: xml,
+        schema: xsdContent,
+      });
+
+      if (result.valid) {
+        return res.json({ isValid: true, errors: [] });
       }
 
-      res.json({ isValid: true, errors: [] });
+      const errors = (result.errors || []).map(errObj => {
+        const err = typeof errObj === 'string' ? errObj : (errObj as any).message || String(errObj);
+        const match = err.match(/:(\d+):/);
+        const line = match ? parseInt(match[1]) : 1;
+        
+        return {
+          line,
+          column: 1,
+          message: err, // Return raw error, client will map it
+          rawContext: err
+        };
+      });
+
+      res.json({ isValid: false, errors });
     } catch (error) {
       console.error("XML Validation Error:", error);
-      res.status(500).json({ isValid: false, message: "Fout bij het valideren van de XML." });
+      res.status(500).json({ 
+        isValid: false, 
+        errors: [{ 
+          line: 1, 
+          message: `Server validatie fout: ${error instanceof Error ? error.message : String(error)}` 
+        }] 
+      });
     }
   });
 

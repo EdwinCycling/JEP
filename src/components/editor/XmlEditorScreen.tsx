@@ -17,7 +17,6 @@ interface XmlEditorScreenProps {
 export default function XmlEditorScreen({ onClose }: XmlEditorScreenProps) {
   const { model, updateModel, addChangelog, addNotification, addedFieldIds } = useJEPStore();
   const [xml, setXml] = useState("");
-  const [xsd, setXsd] = useState("");
   const [errors, setErrors] = useState<ValidationError[]>([]);
   const [isValidating, setIsValidating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -70,29 +69,12 @@ export default function XmlEditorScreen({ onClose }: XmlEditorScreenProps) {
     }
   }, [model]);
 
-  // Fetch XSD
-  useEffect(() => {
-    const fetchXsd = async () => {
-      try {
-        const res = await fetch('/api/xsd');
-        const data = await res.json();
-        setXsd(data.xsd);
-      } catch (error) {
-        console.error("Failed to fetch XSD:", error);
-      }
-    };
-    fetchXsd();
-  }, []);
-
   const handleValidate = async () => {
-    if (!xsd) {
-      addNotification("XSD schema niet geladen.", "warning");
-      return;
-    }
     setIsValidating(true);
     setErrors([]);
     try {
-      const result = await validateWithSchema(xml, xsd);
+      // Validate using the server-side API (handled inside validateWithSchema)
+      const result = await validateWithSchema(xml);
       setErrors(result.errors);
       if (result.isValid) {
         addNotification("XML is succesvol gevalideerd!", "success");
@@ -101,10 +83,11 @@ export default function XmlEditorScreen({ onClose }: XmlEditorScreenProps) {
       }
     } catch (err) {
       console.error("Validation error:", err);
+      const msg = err instanceof Error ? err.message : String(err);
       setErrors([{
         line: 1,
         column: 1,
-        message: "Er is een technische fout opgetreden tijdens de validatie. Controleer of de XML structuur correct is."
+        message: `Er is een fout opgetreden tijdens de validatie: ${msg}`
       }]);
     } finally {
       setIsValidating(false);
